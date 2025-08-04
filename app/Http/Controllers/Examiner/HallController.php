@@ -12,7 +12,10 @@ class HallController extends Controller
 {
     public function index()
     {
-        return view('screens.examiner.halls.index');
+
+        $halls = auth()->user()->exam_halls()->get();
+
+        return view('screens.examiner.halls.index',get_defined_vars());
     }
     public function create()
     {
@@ -32,12 +35,22 @@ class HallController extends Controller
 
         return back()->with('message', 'Hall added Successfully.');
     }
-    public function edit()
+    public function edit($id)
     {
-        return view('screens.examiner.halls.edit');
+
+        $hall = ExamHall::find($id);
+
+        return view('screens.examiner.halls.edit',get_defined_vars());
     }
-    public function update()
+    public function update($id, StoreHallRequest $request)
     {
-        return back();
+
+        $hall = ExamHall::find($id);
+
+        $hall->update([
+            'title' => $request->title
+        ]);
+
+        return redirect()->route('examiner.hall.index');
     }
 }
