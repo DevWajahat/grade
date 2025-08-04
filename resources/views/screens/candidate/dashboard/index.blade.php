@@ -30,7 +30,7 @@
                         </form>
                         <div class="mt-5 d-flex justify-content-end">
                             <button type="button" class="btn text-secondary" data-bs-dismiss="modal">Back</button>
-                            <button type="button" class="btn btn-primary">Join Class</button>
+                            <button type="button" class="btn btn-primary">Join Hall</button>
                         </div>
                     </div>
                 </div>
@@ -137,6 +137,6 @@
             </div>
         </div>
     </div>
-    
+
     <!-- ================================ Examination Hall cards ends ================================== -->
 @endsection

@@ -19,12 +19,13 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
 
-        dd($request->all());
+        // dd($request->all());
 
         $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
+            'first_name' => $request->firstname,
+            'last_name' => $request->lastname,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => $request->password,
             'role' => $request->role,
             'guardian_name' => $request->guardian_name,
@@ -32,8 +33,12 @@ class AuthController extends Controller
             'institute_name' => $request->institute_name
         ]);
 
+        Auth::login($user);
 
-        return redirect()->route("");
+        if (auth()->user()->role == 'candidate') {
+            return redirect()->route('candidate.dashboard');
+        }
+        return redirect()->route('examiner.index');
     }
     public function login_view()
     {
@@ -41,7 +46,16 @@ class AuthController extends Controller
     }
     public function login(LoginRequest $request)
     {
-        return redirect()->route("");
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            if (auth()->user()->role == 'candidate') {
+                return redirect()->route('candidate.dashboard');
+            } else {
+                return redirect()->route('examiner.index');
+            }
+        }
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records'
+        ])->onlyInput('email');
     }
     public function logout()
     {

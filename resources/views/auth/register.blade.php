@@ -225,7 +225,7 @@
                                         <button type="submit" class="button button-lg radius-10">Sign up</button>
                                     </div>
                                 </div>
-                                <p>Already have an account? <a href="login.html">Log In</a></p>
+                                <p>Already have an account? <a href="{{ route('login') }}">Log In</a></p>
                             </form>
                         </div>
                     </div>
