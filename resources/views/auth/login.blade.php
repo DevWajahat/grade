@@ -67,22 +67,22 @@
                                 @csrf
                                 <div class="single-input">
                                     <label for="login-email">Email</label>
-                                    <input type="email" id="login-email" name="email" placeholder="Your Email">
+                                    <input type="email" id="login-email" value="{{ old('email') }}" name="email" placeholder="Your Email">
                                     <i class="lni lni-envelope"></i>
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
+                                @error('email')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                                 <div class="single-input">
                                     <label for="login-password">Password</label>
-                                    <input type="password" id="login-password" name="password"
+                                    <input type="password" id="login-password" value="{{ old('password') }}" name="password"
                                         placeholder="Enter password">
                                     <i class="lni lni-lock"></i>
-                                    @error('password')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
 
                                 </div>
+                                @error('password')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                                 <div class="form-footer">
                                     <div class="form-check mb-25">
                                         <input class="form-check-input" type="checkbox" value=""

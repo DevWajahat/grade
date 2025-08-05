@@ -100,6 +100,16 @@
                             <form action="{{ route('register') }}" method="post" class="signup-form" novalidate>
                                 @csrf
                                 <div class="form-step active" id="step-1">
+                                      @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul>
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+
                                     <div class="single-input">
                                         <label for="firstName">First Name</label>
                                         <input type="text" id="firstName" value="{{ old('firstname') }}"
@@ -132,6 +142,16 @@
                                     </div>
                                 </div>
                                 <div class="form-step" id="step-2">
+                                      @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul>
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+
                                     <div class="single-input">
                                         <label for="signup-email">Email</label>
                                         <input type="email" id="signup-email" name="email"
