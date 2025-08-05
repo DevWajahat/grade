@@ -61,6 +61,6 @@ class User extends Authenticatable
 
     public function examination_halls() :BelongsToMany
     {
-        return $this->belongsToMany(ExamHall::class);
+        return $this->belongsToMany(ExamHall::class, 'hall_user');
     }
 }

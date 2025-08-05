@@ -45,7 +45,7 @@
         <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-light navbar-light">
-                <a href="index.html" class="navbar-brand mx-4 mb-3">
+                <a href="{{ route('examiner.index') }}" class="navbar-brand mx-4 mb-3">
                     <h3 class="text-primary">Grade Genius</h3>
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="index.html" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <a href="{{ route('examiner.index') }}" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                     <!-- <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Elements</a>
                         <div class="dropdown-menu bg-transparent border-0">
@@ -78,11 +78,13 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Exam Halls</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="button.html" class="dropdown-item">Create Halls</a>
+                            <a href="{{ route('examiner.hall.create') }}" class="dropdown-item">Create Halls</a>
                             <a href="{{ route('examiner.hall.index') }}" class="dropdown-item">All Exam Halls Lists</a>
                         </div>
                     </div>
-                    <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Results</a>
+
+
+                    {{-- <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Results</a>
                     <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
                     <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
                     <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
@@ -95,7 +97,7 @@
                             <a href="404.html" class="dropdown-item">404 Error</a>
                             <a href="blank.html" class="dropdown-item">Blank Page</a>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </nav>
         </div>
