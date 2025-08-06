@@ -7,6 +7,7 @@
             --dark: #191C24;
             --light: #F3F6F9;
         }
+
         .form-label {
             font-weight: 600;
         }
@@ -39,9 +40,14 @@
         .option-container .input-group-text {
             background-color: #ffffff;
         }
-        .form-control.is-invalid, .form-select.is-invalid, .was-validated .form-control:invalid, .was-validated .form-select:invalid {
+
+        .form-control.is-invalid,
+        .form-select.is-invalid,
+        .was-validated .form-control:invalid,
+        .was-validated .form-select:invalid {
             border-color: #dc3545 !important;
         }
+
         .invalid-feedback {
             display: none;
             width: 100%;
@@ -49,7 +55,8 @@
             font-size: 0.875em;
             color: #dc3545;
         }
-        .is-invalid ~ .invalid-feedback {
+
+        .is-invalid~.invalid-feedback {
             display: block !important;
         }
     </style>
@@ -63,80 +70,100 @@
                     <div class="col-md-4">
                         <label for="examHall" class="form-label">Examination Hall</label>
                         <select class="form-select" id="examHall" name="exam_hall" aria-label="Examination Hall">
-                            <option selected value="">Select Hall</option>
-                            <option value="hall1">Hall 1</option>
-                            <option value="hall2">Hall 2</option>
-                            <option value="hall3">Hall 3</option>
+                            @forelse ($halls as $hall)
+                                <option  value="{{ $hall->id }}">{{ $hall->title }}</option>
+                            @empty
+                            @endforelse
                         </select>
                         <div class="invalid-feedback">Please select a hall.</div>
                     </div>
                     <div class="col-md-4">
                         <label for="examTitle" class="form-label">Exam Title</label>
-                        <input type="text" class="form-control" id="examTitle" name="exam_title" placeholder="e.g., Midterm Exam - Q1 2025">
+                        <input type="text" class="form-control" id="examTitle" name="exam_title"
+                            placeholder="e.g., Midterm Exam - Q1 2025">
                         <div class="invalid-feedback">Please enter an exam title.</div>
                     </div>
                     <div class="col-md-4">
                         <label for="examDuration" class="form-label">Duration (minutes)</label>
-                        <input type="number" class="form-control" id="examDuration" name="exam_duration" placeholder="e.g., 90">
+                        <input type="number" class="form-control" id="examDuration" name="exam_duration"
+                            placeholder="e.g., 90">
                         <div class="invalid-feedback">Please enter a valid duration.</div>
                     </div>
                 </div>
 
                 <div id="sectionsContainer">
-                    </div>
+                </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-4">
-                    <button type="button" class="btn btn-success add-section-btn"><i class="ri-add-line me-1"></i>Add Section</button>
-                    <button type="submit" class="btn btn-primary"><i class="ri-save-line me-1"></i>Save Examination</button>
+                    <button type="button" class="btn btn-success add-section-btn"><i class="ri-add-line me-1"></i>Add
+                        Section</button>
+                    <button type="submit" class="btn btn-primary"><i class="ri-save-line me-1"></i>Save
+                        Examination</button>
                 </div>
             </form>
         </div>
     </div>
-    @endsection
+@endsection
 
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const sectionsContainer = document.getElementById('sectionsContainer');
-        const examinationForm = document.getElementById('examinationForm');
-        const addSectionBtn = document.querySelector('.add-section-btn');
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sectionsContainer = document.getElementById('sectionsContainer');
+            const examinationForm = document.getElementById('examinationForm');
+            const addSectionBtn = document.querySelector('.add-section-btn');
 
-        const reIndexForm = () => {
-            const sectionCards = sectionsContainer.querySelectorAll('.section-card');
-            sectionCards.forEach((sectionCard, sIndex) => {
-                sectionCard.querySelector('.card-header h6').textContent = `Section ${sIndex + 1}`;
-                const removeSectionBtn = sectionCard.querySelector('.remove-section-btn');
-                removeSectionBtn.style.display = sectionsContainer.querySelectorAll('.section-card').length > 1 ? 'block' : 'none';
+            const reIndexForm = () => {
+                const sectionCards = sectionsContainer.querySelectorAll('.section-card');
+                sectionCards.forEach((sectionCard, sIndex) => {
+                    sectionCard.querySelector('.card-header h6').textContent = `Section ${sIndex + 1}`;
+                    const removeSectionBtn = sectionCard.querySelector('.remove-section-btn');
+                    removeSectionBtn.style.display = sectionsContainer.querySelectorAll('.section-card')
+                        .length > 1 ? 'block' : 'none';
 
-                const questionCards = sectionCard.querySelectorAll('.question-card');
-                questionCards.forEach((questionCard, qIndex) => {
-                    questionCard.querySelector('.card-body .d-flex h6').textContent = `Question ${qIndex + 1}`;
-                    const removeQuestionBtn = questionCard.querySelector('.remove-question-btn');
-                    removeQuestionBtn.style.display = questionCard.closest('.questions-container').querySelectorAll('.question-card').length > 1 ? 'block' : 'none';
+                    const questionCards = sectionCard.querySelectorAll('.question-card');
+                    questionCards.forEach((questionCard, qIndex) => {
+                        questionCard.querySelector('.card-body .d-flex h6').textContent =
+                            `Question ${qIndex + 1}`;
+                        const removeQuestionBtn = questionCard.querySelector(
+                            '.remove-question-btn');
+                        removeQuestionBtn.style.display = questionCard.closest(
+                                '.questions-container').querySelectorAll('.question-card')
+                            .length > 1 ? 'block' : 'none';
 
-                    questionCard.querySelector('textarea.form-control').name = `sections[${sIndex}][questions][${qIndex}][text]`;
-                    questionCard.querySelector('select.question-type-select').name = `sections[${sIndex}][questions][${qIndex}][type]`;
-                    questionCard.querySelector('input.question-marks-input').name = `sections[${sIndex}][questions][${qIndex}][marks]`;
+                        questionCard.querySelector('textarea.form-control').name =
+                            `sections[${sIndex}][questions][${qIndex}][text]`;
+                        questionCard.querySelector('select.question-type-select').name =
+                            `sections[${sIndex}][questions][${qIndex}][type]`;
+                        questionCard.querySelector('input.question-marks-input').name =
+                            `sections[${sIndex}][questions][${qIndex}][marks]`;
 
-                    const optionInputs = questionCard.querySelectorAll('.option-item');
-                    optionInputs.forEach((optionItem, oIndex) => {
-                        const radioInput = optionItem.querySelector('input[type="radio"]');
-                        const textInput = optionItem.querySelector('input[type="text"]');
+                        const optionInputs = questionCard.querySelectorAll('.option-item');
+                        optionInputs.forEach((optionItem, oIndex) => {
+                            const radioInput = optionItem.querySelector(
+                                'input[type="radio"]');
+                            const textInput = optionItem.querySelector(
+                                'input[type="text"]');
 
-                        radioInput.name = `sections[${sIndex}][questions][${qIndex}][correct_option]`;
-                        radioInput.value = `${oIndex}`;
-                        textInput.name = `sections[${sIndex}][questions][${qIndex}][options][${oIndex}][text]`;
+                            radioInput.name =
+                                `sections[${sIndex}][questions][${qIndex}][correct_option]`;
+                            radioInput.value = `${oIndex}`;
+                            textInput.name =
+                                `sections[${sIndex}][questions][${qIndex}][options][${oIndex}][text]`;
 
-                        const removeOptionBtn = optionItem.querySelector('.remove-option-btn');
-                        removeOptionBtn.style.display = optionItem.closest('.option-inputs').querySelectorAll('.option-item').length > 1 ? 'block' : 'none';
+                            const removeOptionBtn = optionItem.querySelector(
+                                '.remove-option-btn');
+                            removeOptionBtn.style.display = optionItem.closest(
+                                    '.option-inputs').querySelectorAll('.option-item')
+                                .length > 1 ? 'block' : 'none';
+                        });
                     });
                 });
-            });
-        };
+            };
 
-        const createOptionInput = (sIndex, qIndex) => {
-            const oIndex = document.querySelectorAll(`input[name^="sections[${sIndex}][questions][${qIndex}][options]"]`).length;
-            return `
+            const createOptionInput = (sIndex, qIndex) => {
+                const oIndex = document.querySelectorAll(
+                    `input[name^="sections[${sIndex}][questions][${qIndex}][options]"]`).length;
+                return `
                 <div class="input-group mb-2 option-item">
                     <span class="input-group-text">
                         <input class="form-check-input mt-0" type="radio" name="sections[${sIndex}][questions][${qIndex}][correct_option]" value="${oIndex}">
@@ -146,10 +173,10 @@
                     <div class="invalid-feedback">Option text is required.</div>
                 </div>
             `;
-        };
+            };
 
-        const createQuestionCardHtml = (sIndex, qIndex) => {
-            return `
+            const createQuestionCardHtml = (sIndex, qIndex) => {
+                return `
                 <div class="question-card card mb-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -182,24 +209,25 @@
                     </div>
                 </div>
             `;
-        };
+            };
 
-        const addQuestion = (sectionCard) => {
-            const questionsContainer = sectionCard.querySelector('.questions-container');
-            const sIndex = Array.from(sectionsContainer.querySelectorAll('.section-card')).indexOf(sectionCard);
-            const qIndex = questionsContainer.querySelectorAll('.question-card').length;
+            const addQuestion = (sectionCard) => {
+                const questionsContainer = sectionCard.querySelector('.questions-container');
+                const sIndex = Array.from(sectionsContainer.querySelectorAll('.section-card')).indexOf(
+                    sectionCard);
+                const qIndex = questionsContainer.querySelectorAll('.question-card').length;
 
-            const newQuestionCard = document.createElement('div');
-            newQuestionCard.innerHTML = createQuestionCardHtml(sIndex, qIndex);
-            questionsContainer.appendChild(newQuestionCard.firstElementChild);
-            reIndexForm();
-        };
+                const newQuestionCard = document.createElement('div');
+                newQuestionCard.innerHTML = createQuestionCardHtml(sIndex, qIndex);
+                questionsContainer.appendChild(newQuestionCard.firstElementChild);
+                reIndexForm();
+            };
 
-        const addSection = () => {
-            const sIndex = sectionsContainer.querySelectorAll('.section-card').length;
-            const newSectionCard = document.createElement('div');
-            newSectionCard.className = 'section-card card mb-4';
-            newSectionCard.innerHTML = `
+            const addSection = () => {
+                const sIndex = sectionsContainer.querySelectorAll('.section-card').length;
+                const newSectionCard = document.createElement('div');
+                newSectionCard.className = 'section-card card mb-4';
+                newSectionCard.innerHTML = `
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h6 class="mb-0">Section ${sIndex + 1}</h6>
                     <button type="button" class="btn btn-sm btn-danger remove-section-btn"><i class="ri-delete-bin-line"></i></button>
@@ -211,198 +239,234 @@
                     </div>
                 </div>
             `;
-            sectionsContainer.appendChild(newSectionCard);
-            addQuestion(newSectionCard);
-            reIndexForm();
-        };
+                sectionsContainer.appendChild(newSectionCard);
+                addQuestion(newSectionCard);
+                reIndexForm();
+            };
 
-        const validateForm = () => {
-            let isValid = true;
-            examinationForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-            examinationForm.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+            const validateForm = () => {
+                let isValid = true;
+                examinationForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove(
+                    'is-invalid'));
+                examinationForm.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
 
-            // Validate Exam Details
-            const examHall = document.getElementById('examHall');
-            const examTitle = document.getElementById('examTitle');
-            const examDuration = document.getElementById('examDuration');
+                // Validate Exam Details
+                const examHall = document.getElementById('examHall');
+                const examTitle = document.getElementById('examTitle');
+                const examDuration = document.getElementById('examDuration');
 
-            if (examHall.value.trim() === '') { examHall.classList.add('is-invalid'); isValid = false; }
-            if (examTitle.value.trim() === '') { examTitle.classList.add('is-invalid'); isValid = false; }
-            if (examDuration.value.trim() === '' || isNaN(examDuration.value) || parseInt(examDuration.value) <= 0) { examDuration.classList.add('is-invalid'); isValid = false; }
+                if (examHall.value.trim() === '') {
+                    examHall.classList.add('is-invalid');
+                    isValid = false;
+                }
+                if (examTitle.value.trim() === '') {
+                    examTitle.classList.add('is-invalid');
+                    isValid = false;
+                }
+                if (examDuration.value.trim() === '' || isNaN(examDuration.value) || parseInt(examDuration
+                        .value) <= 0) {
+                    examDuration.classList.add('is-invalid');
+                    isValid = false;
+                }
 
-            // Validate Questions and Sections
-            const sectionCards = sectionsContainer.querySelectorAll('.section-card');
-            sectionCards.forEach(sectionCard => {
-                const questionCards = sectionCard.querySelectorAll('.question-card');
-                questionCards.forEach(questionCard => {
-                    const questionText = questionCard.querySelector('textarea');
-                    const questionType = questionCard.querySelector('.question-type-select');
-                    const questionMarks = questionCard.querySelector('.question-marks-input');
+                // Validate Questions and Sections
+                const sectionCards = sectionsContainer.querySelectorAll('.section-card');
+                sectionCards.forEach(sectionCard => {
+                    const questionCards = sectionCard.querySelectorAll('.question-card');
+                    questionCards.forEach(questionCard => {
+                        const questionText = questionCard.querySelector('textarea');
+                        const questionType = questionCard.querySelector(
+                            '.question-type-select');
+                        const questionMarks = questionCard.querySelector(
+                            '.question-marks-input');
 
-                    if (questionText.value.trim() === '') { questionText.classList.add('is-invalid'); isValid = false; }
-                    if (questionType.value.trim() === '') { questionType.classList.add('is-invalid'); isValid = false; }
-                    if (questionMarks.value.trim() === '' || isNaN(questionMarks.value) || parseInt(questionMarks.value) <= 0) { questionMarks.classList.add('is-invalid'); isValid = false; }
-
-                    if (questionType.value === 'multiple-choice') {
-                        const optionsContainer = questionCard.querySelector('.options-container');
-                        const optionInputs = optionsContainer.querySelectorAll('.option-item input[type="text"]');
-                        const correctOptionRadios = optionsContainer.querySelectorAll('.option-item input[type="radio"]');
-
-                        // Require at least one option if multiple-choice is selected
-                        if (optionInputs.length === 0) {
-                            // Find the correct feedback element or create one
-                            let feedbackElement = optionsContainer.querySelector('.invalid-feedback');
-                            if (!feedbackElement) {
-                                feedbackElement = document.createElement('div');
-                                feedbackElement.className = 'invalid-feedback';
-                                feedbackElement.textContent = "At least one option is required.";
-                                optionsContainer.appendChild(feedbackElement);
-                            }
-                            feedbackElement.style.display = 'block';
+                        if (questionText.value.trim() === '') {
+                            questionText.classList.add('is-invalid');
                             isValid = false;
-                        } else {
-                            // Validate that all options have text
-                            optionInputs.forEach(input => {
-                                if (input.value.trim() === '') {
-                                    input.classList.add('is-invalid');
-                                    isValid = false;
-                                }
-                            });
+                        }
+                        if (questionType.value.trim() === '') {
+                            questionType.classList.add('is-invalid');
+                            isValid = false;
+                        }
+                        if (questionMarks.value.trim() === '' || isNaN(questionMarks.value) ||
+                            parseInt(questionMarks.value) <= 0) {
+                            questionMarks.classList.add('is-invalid');
+                            isValid = false;
                         }
 
-                        // Do not require a correct answer if no options exist,
-                        // otherwise, ensure one is checked.
-                        if (optionInputs.length > 0) {
-                            let hasCorrectAnswer = Array.from(correctOptionRadios).some(radio => radio.checked);
-                            // if (!hasCorrectAnswer) {
-                            //     const parentDiv = optionsContainer.querySelector('.add-option-btn')?.parentElement || optionsContainer;
-                            //     let errorDiv = parentDiv.nextElementSibling;
-                            //     if (!errorDiv || !errorDiv.classList.contains('invalid-feedback')) {
-                            //         errorDiv = document.createElement('div');
-                            //         errorDiv.className = 'invalid-feedback text-center mt-2';
-                            //         parentDiv.after(errorDiv);
-                            //     }
-                            //     errorDiv.textContent = "Please select a correct answer.";
-                            //     errorDiv.style.display = 'block';
-                            //     isValid = false;
-                            // }
+                        if (questionType.value === 'multiple-choice') {
+                            const optionsContainer = questionCard.querySelector(
+                                '.options-container');
+                            const optionInputs = optionsContainer.querySelectorAll(
+                                '.option-item input[type="text"]');
+                            const correctOptionRadios = optionsContainer.querySelectorAll(
+                                '.option-item input[type="radio"]');
+
+                            // Require at least one option if multiple-choice is selected
+                            if (optionInputs.length === 0) {
+                                // Find the correct feedback element or create one
+                                let feedbackElement = optionsContainer.querySelector(
+                                    '.invalid-feedback');
+                                if (!feedbackElement) {
+                                    feedbackElement = document.createElement('div');
+                                    feedbackElement.className = 'invalid-feedback';
+                                    feedbackElement.textContent =
+                                        "At least one option is required.";
+                                    optionsContainer.appendChild(feedbackElement);
+                                }
+                                feedbackElement.style.display = 'block';
+                                isValid = false;
+                            } else {
+                                // Validate that all options have text
+                                optionInputs.forEach(input => {
+                                    if (input.value.trim() === '') {
+                                        input.classList.add('is-invalid');
+                                        isValid = false;
+                                    }
+                                });
+                            }
+
+                            // Do not require a correct answer if no options exist,
+                            // otherwise, ensure one is checked.
+                            if (optionInputs.length > 0) {
+                                let hasCorrectAnswer = Array.from(correctOptionRadios).some(
+                                    radio => radio.checked);
+                                // if (!hasCorrectAnswer) {
+                                //     const parentDiv = optionsContainer.querySelector('.add-option-btn')?.parentElement || optionsContainer;
+                                //     let errorDiv = parentDiv.nextElementSibling;
+                                //     if (!errorDiv || !errorDiv.classList.contains('invalid-feedback')) {
+                                //         errorDiv = document.createElement('div');
+                                //         errorDiv.className = 'invalid-feedback text-center mt-2';
+                                //         parentDiv.after(errorDiv);
+                                //     }
+                                //     errorDiv.textContent = "Please select a correct answer.";
+                                //     errorDiv.style.display = 'block';
+                                //     isValid = false;
+                                // }
+                            }
                         }
-                    }
+                    });
                 });
+
+                return isValid;
+            };
+
+            // Add event listeners for dynamic validation to hide errors on input
+            examinationForm.addEventListener('input', (e) => {
+                if (e.target.matches('.form-control, .form-select')) {
+                    e.target.classList.remove('is-invalid');
+                    const feedback = e.target.closest('.mb-3, .col-md-6, .option-item').querySelector(
+                        '.invalid-feedback');
+                    if (feedback) {
+                        feedback.style.display = 'none';
+                    }
+                }
+                if (e.target.closest('.options-container') && e.target.matches('input[type="text"]')) {
+                    const feedback = e.target.closest('.option-item').querySelector('.invalid-feedback');
+                    if (feedback) {
+                        feedback.style.display = 'none';
+                    }
+                }
             });
 
-            return isValid;
-        };
-
-        // Add event listeners for dynamic validation to hide errors on input
-        examinationForm.addEventListener('input', (e) => {
-            if (e.target.matches('.form-control, .form-select')) {
-                e.target.classList.remove('is-invalid');
-                const feedback = e.target.closest('.mb-3, .col-md-6, .option-item').querySelector('.invalid-feedback');
-                if (feedback) {
-                    feedback.style.display = 'none';
+            // Add event listeners for radios (correct answer)
+            sectionsContainer.addEventListener('change', (e) => {
+                if (e.target.matches('input[type="radio"]')) {
+                    const optionsContainer = e.target.closest('.options-container');
+                    const errorDiv = optionsContainer.querySelector('.invalid-feedback.text-center');
+                    if (errorDiv) {
+                        errorDiv.style.display = 'none';
+                    }
                 }
-            }
-            if (e.target.closest('.options-container') && e.target.matches('input[type="text"]')) {
-                const feedback = e.target.closest('.option-item').querySelector('.invalid-feedback');
-                if (feedback) {
-                    feedback.style.display = 'none';
+            });
+
+            // Event Listeners for adding/removing elements
+            addSectionBtn.addEventListener('click', addSection);
+
+            sectionsContainer.addEventListener('click', (e) => {
+                if (e.target.closest('.add-question-btn')) {
+                    const sectionCard = e.target.closest('.section-card');
+                    addQuestion(sectionCard);
                 }
-            }
-        });
 
-        // Add event listeners for radios (correct answer)
-        sectionsContainer.addEventListener('change', (e) => {
-            if (e.target.matches('input[type="radio"]')) {
-                const optionsContainer = e.target.closest('.options-container');
-                const errorDiv = optionsContainer.querySelector('.invalid-feedback.text-center');
-                if (errorDiv) {
-                    errorDiv.style.display = 'none';
+                if (e.target.closest('.remove-question-btn')) {
+                    const questionCard = e.target.closest('.question-card');
+                    const questionsContainer = questionCard.closest('.questions-container');
+                    if (questionsContainer.querySelectorAll('.question-card').length > 1) {
+                        questionCard.remove();
+                        reIndexForm();
+                    }
                 }
-            }
-        });
 
-        // Event Listeners for adding/removing elements
-        addSectionBtn.addEventListener('click', addSection);
+                if (e.target.closest('.remove-section-btn')) {
+                    const sectionCard = e.target.closest('.section-card');
+                    if (sectionsContainer.querySelectorAll('.section-card').length > 1) {
+                        sectionCard.remove();
+                        reIndexForm();
+                    }
+                }
 
-        sectionsContainer.addEventListener('click', (e) => {
-            if (e.target.closest('.add-question-btn')) {
-                const sectionCard = e.target.closest('.section-card');
-                addQuestion(sectionCard);
-            }
+                if (e.target.closest('.add-option-btn')) {
+                    const questionCard = e.target.closest('.question-card');
+                    const optionInputsContainer = questionCard.querySelector('.option-inputs');
+                    const sectionCard = questionCard.closest('.section-card');
+                    const sIndex = Array.from(sectionsContainer.querySelectorAll('.section-card')).indexOf(
+                        sectionCard);
+                    const qIndex = Array.from(sectionCard.querySelectorAll('.question-card')).indexOf(
+                        questionCard);
 
-            if (e.target.closest('.remove-question-btn')) {
-                const questionCard = e.target.closest('.question-card');
-                const questionsContainer = questionCard.closest('.questions-container');
-                if (questionsContainer.querySelectorAll('.question-card').length > 1) {
-                    questionCard.remove();
+                    optionInputsContainer.insertAdjacentHTML('beforeend', createOptionInput(sIndex,
+                        qIndex));
                     reIndexForm();
                 }
-            }
 
-            if (e.target.closest('.remove-section-btn')) {
-                const sectionCard = e.target.closest('.section-card');
-                if (sectionsContainer.querySelectorAll('.section-card').length > 1) {
-                    sectionCard.remove();
-                    reIndexForm();
+                if (e.target.closest('.remove-option-btn')) {
+                    const optionItem = e.target.closest('.option-item');
+                    const optionsContainer = optionItem.closest('.option-inputs');
+                    if (optionsContainer.querySelectorAll('.option-item').length > 1) {
+                        optionItem.remove();
+                        reIndexForm();
+                    }
                 }
-            }
+            });
 
-            if (e.target.closest('.add-option-btn')) {
-                const questionCard = e.target.closest('.question-card');
-                const optionInputsContainer = questionCard.querySelector('.option-inputs');
-                const sectionCard = questionCard.closest('.section-card');
-                const sIndex = Array.from(sectionsContainer.querySelectorAll('.section-card')).indexOf(sectionCard);
-                const qIndex = Array.from(sectionCard.querySelectorAll('.question-card')).indexOf(questionCard);
+            sectionsContainer.addEventListener('change', (e) => {
+                if (e.target.matches('.question-type-select')) {
+                    const selectElement = e.target;
+                    const questionCard = selectElement.closest('.question-card');
+                    const optionsContainer = questionCard.querySelector('.options-container');
+                    optionsContainer.innerHTML = '';
 
-                optionInputsContainer.insertAdjacentHTML('beforeend', createOptionInput(sIndex, qIndex));
-                reIndexForm();
-            }
+                    const sIndex = Array.from(sectionsContainer.querySelectorAll('.section-card')).indexOf(
+                        questionCard.closest('.section-card'));
+                    const qIndex = Array.from(questionCard.closest('.questions-container').querySelectorAll(
+                        '.question-card')).indexOf(questionCard);
 
-            if (e.target.closest('.remove-option-btn')) {
-                const optionItem = e.target.closest('.option-item');
-                const optionsContainer = optionItem.closest('.option-inputs');
-                if (optionsContainer.querySelectorAll('.option-item').length > 1) {
-                    optionItem.remove();
-                    reIndexForm();
-                }
-            }
-        });
-
-        sectionsContainer.addEventListener('change', (e) => {
-            if (e.target.matches('.question-type-select')) {
-                const selectElement = e.target;
-                const questionCard = selectElement.closest('.question-card');
-                const optionsContainer = questionCard.querySelector('.options-container');
-                optionsContainer.innerHTML = '';
-
-                const sIndex = Array.from(sectionsContainer.querySelectorAll('.section-card')).indexOf(questionCard.closest('.section-card'));
-                const qIndex = Array.from(questionCard.closest('.questions-container').querySelectorAll('.question-card')).indexOf(questionCard);
-
-                if (selectElement.value === 'multiple-choice') {
-                    optionsContainer.innerHTML = `
+                    if (selectElement.value === 'multiple-choice') {
+                        optionsContainer.innerHTML = `
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="mb-0">Options</h6>
                             <button type="button" class="btn btn-sm btn-secondary add-option-btn"><i class="ri-add-line me-1"></i>Add Option</button>
                         </div>
                         <div class="option-inputs"></div>
                     `;
-                    const optionInputsContainer = optionsContainer.querySelector('.option-inputs');
-                    optionInputsContainer.insertAdjacentHTML('beforeend', createOptionInput(sIndex, qIndex));
-                    reIndexForm();
+                        const optionInputsContainer = optionsContainer.querySelector('.option-inputs');
+                        optionInputsContainer.insertAdjacentHTML('beforeend', createOptionInput(sIndex,
+                            qIndex));
+                        reIndexForm();
+                    }
                 }
-            }
-        });
+            });
 
-        examinationForm.addEventListener('submit', function (event) {
-            if (!validateForm()) {
-                event.preventDefault();
-                alert('Please correct the errors in the form before submitting.');
-            }
-        });
+            examinationForm.addEventListener('submit', function(event) {
+                if (!validateForm()) {
+                    event.preventDefault();
+                    alert('Please correct the errors in the form before submitting.');
+                }
+            });
 
-        // Initial setup
-        addSection();
-    });
-</script>
+            // Initial setup
+            addSection();
+        });
+    </script>
 @endpush
