@@ -63,4 +63,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(ExamHall::class, 'hall_user');
     }
+
+    public function exams(): HasMany
+    {
+        return $this->hasMany(Exam::class);
+    }
 }

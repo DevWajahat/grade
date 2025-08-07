@@ -6,18 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Question extends Model
+class Section extends Model
 {
     protected $guarded = [];
 
 
-    public function section() : BelongsTo
+    public function exam(): BelongsTo
     {
-        return $this->belongsTo(Section::class);
+        return $this->belongsTo(Exam::class);
     }
 
-    public function options() : HasMany
+    public function questions(): HasMany
     {
-        return $this->hasMany(Option::class);
+        return $this->hasMany(Question::class);
     }
+
 }

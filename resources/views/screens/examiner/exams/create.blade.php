@@ -59,6 +59,12 @@
         .is-invalid~.invalid-feedback {
             display: block !important;
         }
+        .form-control{
+            color:#000 !important;
+        }
+        .form-select{
+            color:#000
+        }
     </style>
 
     <div class="container-fluid pt-4 px-4">
