@@ -14,6 +14,7 @@ class HallController extends Controller
     {
 
         $halls = auth()->user()->exam_halls()->get();
+        
 
         return view('screens.examiner.halls.index',get_defined_vars());
     }

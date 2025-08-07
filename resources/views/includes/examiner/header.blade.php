@@ -66,30 +66,23 @@
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="{{ route('examiner.index') }}" class="nav-item nav-link active"><i
+                    <a href="{{ route('examiner.index') }}" class="nav-item nav-link "><i
                             class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                    <!-- <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Elements</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="button.html" class="dropdown-item">Buttons</a>
-                            <a href="typography.html" class="dropdown-item">Typography</a>
-                            <a href="element.html" class="dropdown-item">Other Elements</a>
-                        </div>
-                    </div> -->
+                
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                        <a href="#" class="nav-link dropdown-toggle {{ Route::currentRouteName() == 'examiner.exams.create' || Route::currentRouteName() == 'examiner.exams.index' ? 'active' : '' }}" data-bs-toggle="dropdown" ><i
                                 class="fa fa-laptop me-2"></i>Exams</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="{{ route('examiner.exams.create') }}" class="dropdown-item">Create Exams</a>
-                            <a href="typography.html" class="dropdown-item">Exam List</a>
+                            <a href="{{ route('examiner.exams.create') }}" class="dropdown-item {{ Route::currentRouteName() == 'examiner.exams.create' ? 'active' : '' }}">Create Exams</a>
+                            <a href="{{ route('examiner.exams.index') }}" class="dropdown-item {{ Route::currentRouteName() == 'examiner.exams.index' ? 'active' : '' }}">Exam List</a>
                         </div>
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                                class="fa fa-laptop me-2"></i>Exam Halls</a>
+                        <a href="#" class="nav-link dropdown-toggle {{ Route::currentRouteName() == 'examiner.hall.create' || Route::currentRouteName() == 'examiner.hall.index' ? 'active' : '' }}" data-bs-toggle="dropdown"><i
+                                class="fa fa-laptop me-2 "></i>Exam Halls</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="{{ route('examiner.hall.create') }}" class="dropdown-item">Create Halls</a>
-                            <a href="{{ route('examiner.hall.index') }}" class="dropdown-item">All Exam Halls Lists</a>
+                            <a href="{{ route('examiner.hall.create') }} " class="dropdown-item {{ Route::currentRouteName() == 'examiner.hall.create' ? 'active' : '' }}">Create Halls</a>
+                            <a href="{{ route('examiner.hall.index') }}" class="dropdown-item {{ Route::currentRouteName() == 'examiner.hall.index' ? 'active' : '' }}">All Exam Halls Lists</a>
                         </div>
                     </div>
 

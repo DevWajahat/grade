@@ -10,22 +10,36 @@
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
+                                <th scope="col">hall</th>
                                 <th scope="col">Title</th>
-                                <th scope="col">Hall Code</th>
+                                <th scope="col">Total_Marks</th>
+                                <th scope="col">duration_minutes</th>
+                                <th scope="col">status</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse ($exams as $exam)
+                            <tr>
+                                <td>{{ $exam->id }}</td>
+                                <td>{{ $exam->exam_hall->title }}</td>
+                                <td>{{ $exam->title }}</td>
+                                <td>{{ $exam->total_marks }}</td>
+                                <td>{{ $exam->duration_minutes }}</td>
+                                <td>
+                                    <select name="status" id="status" class="form-control">
+                                        <option value="public" {{ $exam->status == 'public' ? 'selected' : '' }}>public</option>
+                                        <option value="private"{{ $exam->status == 'private' ? 'selected' : '' }}>private</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <a href="{{ route('examiner.exams.edit',$exam->id) }}" class="btn btn-warning">Edit</a>
+                                </td>
+                            </tr>
 
-                            {{-- @forelse ($halls as $hall) --}}
-                                <tr>
-                                    <th scope="row"></th>
-                                    <td></td>
-                                    <td></td>
-                                    <td><a href="" class="btn btn-warning">Edit</a></td>
-                                </tr>
-                            {{-- @empty
-                            @endforelse --}}
+                            @empty
+
+                            @endforelse
 
                         </tbody>
                     </table>

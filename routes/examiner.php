@@ -16,9 +16,10 @@ Route::prefix('halls')->controller(HallController::class)->name('hall.')->group(
 });
 
 Route::prefix('exams')->controller(ExamController::class)->name('exams.')->group(function () {
-    Route::get('index', 'index')->name('index');
+    Route::get('/', 'index')->name('index');
     Route::get('create', 'create')->name('create');
     Route::post('store', 'store')->name('store');
     Route::get('edit/{id}', 'edit')->name('edit');
-    Route::post('update/{id}', 'update')->name('update');
+    Route::put('update/{id}', 'update')->name('update');
+    Route::get('/{id}/data',  'getExamData')->name('.data');
 });

@@ -20,5 +20,9 @@ class Exam extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function exam_hall(): BelongsTo
+    {
+        return $this->belongsTo(ExamHall::class);
+    }
 
 }

@@ -50,12 +50,11 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><a href="#"
                                 class="text-decoration-none text-dark">Dashboard</a></li>
-                        <li class="list-group-item"><a href="#" class="text-decoration-none text-dark">My
-                                Exams</a></li>
                         <li class="list-group-item"><a href="#"
                                 class="text-decoration-none text-dark">Settings</a></li>
                         <li class="list-group-item"><a href="#" class="text-decoration-none text-dark">Help</a>
                         </li>
+                        <li class="list-group-item"><a href="{{ route('logout') }} " class="text-decoration-none text-dark">Logout</a></li>
                     </ul>
                 </div>
             </div>
