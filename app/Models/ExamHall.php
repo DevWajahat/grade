@@ -21,6 +21,6 @@ class ExamHall extends Model
     }
     public function exams(): HasMany
     {
-        return $this->hasMany(Exam::all());
+        return $this->hasMany(Exam::class);
     }
 }

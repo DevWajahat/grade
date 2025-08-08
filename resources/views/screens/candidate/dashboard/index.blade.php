@@ -50,7 +50,7 @@
             @forelse ($examHalls as $hall)
 
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
-                <a href="examination-hall.html" class="card-link">
+                <a href="{{ route('candidate.examination',$hall->hall_code) }}" class="card-link">
                     <div class="card card-custom w-100">
                         <div class="card-header-custom" data-gradient-index="0">
                             <div class="text-small font-semibold-custom mb-1-custom"></div>
