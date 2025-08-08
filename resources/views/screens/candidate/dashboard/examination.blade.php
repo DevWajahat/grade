@@ -31,7 +31,7 @@
                     <div class="exam-card">
                         <div class="exam-card-header">
                             <h2 class="exam-title">{{ $exam->title }}</h2>
-
+                            
                         </div>
                         <p class="text-secondary mb-3"></p>
                         <div class="d-flex flex-wrap mb-3">
@@ -54,7 +54,7 @@
                             @endforelse
                         </div>
                         <div class="mt-4">
-                            <a href="exam.html" class="btn btn-primary">Start Exams</a>
+                            <a href="{{ route('candidate.exam.index',$exam->id) }}" class="btn btn-primary">Start Exams</a>
                         </div>
                     </div>
 
