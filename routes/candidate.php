@@ -14,6 +14,7 @@ Route::controller(DashboardController::class)->group(function () {
 
 Route::controller(ExamController::class)->group(function () {
     Route::get('exam/{id}', 'index')->name('exam.index');
+    Route::post('submit-exam/{id}','submitExam')->name('submitexam');
 });
 
 Route::controller(CameraController::class)->group(function () {

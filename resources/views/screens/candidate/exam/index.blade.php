@@ -130,12 +130,9 @@
         const nextSectionBtn = $('#nextSectionBtn');
         const submitExamBtn = $('#submitExamBtn');
         const timerDisplay = $('#examTimer');
-
         let timeRemaining;
         let currentSectionIndex;
-
         const savedState = JSON.parse(sessionStorage.getItem("examState"));
-
         if (savedState) {
             timeRemaining = savedState.timeRemaining;
             currentSectionIndex = savedState.currentSectionIndex;
@@ -143,75 +140,90 @@
             timeRemaining = {{ $exam->duration_minutes }} * 60;
             currentSectionIndex = 0;
         }
-
         window.timeRemaining = timeRemaining;
         window.currentSectionIndex = currentSectionIndex;
-
         const timerInterval = setInterval(() => {
             window.timeRemaining--;
             const minutes = Math.floor(window.timeRemaining / 60);
             const seconds = window.timeRemaining % 60;
             timerDisplay.text(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+
             if (window.timeRemaining <= 0) {
                 clearInterval(timerInterval);
-                alert("Time's up! Your exam has been automatically submitted.");
                 submitExam();
             }
         }, 1000);
-
         const updateNavigationButtons = () => {
             prevSectionBtn.prop('disabled', window.currentSectionIndex === 0);
             nextSectionBtn.prop('disabled', window.currentSectionIndex === sections.length - 1);
             submitExamBtn.toggle(window.currentSectionIndex === sections.length - 1);
         };
-
         const showSection = index => {
             sections.hide().eq(index).show();
             updateNavigationButtons();
         };
-
         prevSectionBtn.on('click', () => {
             if (window.currentSectionIndex > 0) {
                 window.currentSectionIndex--;
                 showSection(window.currentSectionIndex);
             }
         });
-
         nextSectionBtn.on('click', () => {
             if (window.currentSectionIndex < sections.length - 1) {
                 window.currentSectionIndex++;
                 showSection(window.currentSectionIndex);
             }
         });
-
         const submitExam = () => {
+            const formData = {};
+            const examId = {{ $exam->id }};
+            $('#examForm').find('input[type="radio"]:checked, textarea').each(function() {
+                const questionId = $(this).data('question');
+                const answerContent = $(this).val();
+                if (questionId) {
+                    formData[questionId] = answerContent;
+                }
+            });
             clearInterval(timerInterval);
-            console.log("Exam submitted!");
-            sessionStorage.removeItem("examState");
-            alert("Your exam has been submitted successfully!");
+            window.onbeforeunload = null;
+            $.ajax({
+                url: `{{ route('candidate.submitexam',$id) }}`,
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    finished_at: window.timeRemaining,
+                    answers: formData
+                },
+                success: function(response) {
+                    if (response.success) {
+                        sessionStorage.removeItem("examState");
+                        sessionStorage.removeItem("ocrquestion");
+                        alert(response.message);
+                        window.location.href = response.redirect;
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'An unexpected error occurred.';
+                    alert('Error submitting exam: ' + errorMsg);
+                }
+            });
         };
-
         $(document).on("click", ".capture-btn", (e) => {
             window.onbeforeunload = null;
             window.saveStateBeforeRedirect(window.timeRemaining, window.currentSectionIndex);
-            // This is where you would handle the redirect to the OCR page
         });
-
         $('#confirmSubmitBtn').on('click', () => {
-            window.onbeforeunload = null;
             submitExam();
         });
-
         showSection(window.currentSectionIndex);
-
         if (sessionStorage.getItem("ocrquestion")) {
-            let [questionNo, answer] = JSON.parse(sessionStorage.getItem("ocrquestion"));
-            $(`textarea[data-question='${questionNo}']`).val(answer);
+            let [questionId, answer] = JSON.parse(sessionStorage.getItem("ocrquestion"));
+            $(`textarea[data-question='${questionId}']`).val(answer);
             sessionStorage.removeItem("ocrquestion");
             window.saveStateBeforeRedirect(window.timeRemaining, window.currentSectionIndex);
         }
     };
-
     window.onbeforeunload = () => "Are you sure you want to leave? Changes you made may not be saved.";
 </script>
-

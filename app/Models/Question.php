@@ -11,13 +11,17 @@ class Question extends Model
     protected $guarded = [];
 
 
-    public function section() : BelongsTo
+    public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
     }
 
-    public function options() : HasMany
+    public function options(): HasMany
     {
         return $this->hasMany(Option::class);
+    }
+    public function correctAnswer()
+    {
+        return $this->hasOne(CorrectAnswer::class);
     }
 }
