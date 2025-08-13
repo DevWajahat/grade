@@ -8,7 +8,7 @@
         </div>
     </div>
 
-    <form id="examForm">
+    <form id="examForm" method="post" enctype="multipart/form-data">
         <!-- Section A: Multiple Choice Questions -->
         @forelse ($exam->sections as $section)
             <div class="question-section-card">
@@ -124,71 +124,94 @@
     integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+    window.onload = () => {
+        const sections = $('.question-section-card');
+        const prevSectionBtn = $('#prevSectionBtn');
+        const nextSectionBtn = $('#nextSectionBtn');
+        const submitExamBtn = $('#submitExamBtn');
+        const timerDisplay = $('#examTimer');
 
+        let timeRemaining;
+        let currentSectionIndex;
 
-  $(function() {
-    if (sessionStorage.getItem("ocrquestion")) {
-        let [questionNo, answer] = JSON.parse(sessionStorage.getItem("ocrquestion"));
-        $(`textarea[data-question='${questionNo}']`).val(answer);
-        sessionStorage.removeItem("ocrquestion")
-    }
+        const savedState = JSON.parse(sessionStorage.getItem("examState"));
+
+        if (savedState) {
+            timeRemaining = savedState.timeRemaining;
+            currentSectionIndex = savedState.currentSectionIndex;
+        } else {
+            timeRemaining = {{ $exam->duration_minutes }} * 60;
+            currentSectionIndex = 0;
+        }
+
+        window.timeRemaining = timeRemaining;
+        window.currentSectionIndex = currentSectionIndex;
+
+        const timerInterval = setInterval(() => {
+            window.timeRemaining--;
+            const minutes = Math.floor(window.timeRemaining / 60);
+            const seconds = window.timeRemaining % 60;
+            timerDisplay.text(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+            if (window.timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                alert("Time's up! Your exam has been automatically submitted.");
+                submitExam();
+            }
+        }, 1000);
+
+        const updateNavigationButtons = () => {
+            prevSectionBtn.prop('disabled', window.currentSectionIndex === 0);
+            nextSectionBtn.prop('disabled', window.currentSectionIndex === sections.length - 1);
+            submitExamBtn.toggle(window.currentSectionIndex === sections.length - 1);
+        };
+
+        const showSection = index => {
+            sections.hide().eq(index).show();
+            updateNavigationButtons();
+        };
+
+        prevSectionBtn.on('click', () => {
+            if (window.currentSectionIndex > 0) {
+                window.currentSectionIndex--;
+                showSection(window.currentSectionIndex);
+            }
+        });
+
+        nextSectionBtn.on('click', () => {
+            if (window.currentSectionIndex < sections.length - 1) {
+                window.currentSectionIndex++;
+                showSection(window.currentSectionIndex);
+            }
+        });
+
+        const submitExam = () => {
+            clearInterval(timerInterval);
+            console.log("Exam submitted!");
+            sessionStorage.removeItem("examState");
+            alert("Your exam has been submitted successfully!");
+        };
+
+        $(document).on("click", ".capture-btn", (e) => {
+            window.onbeforeunload = null;
+            window.saveStateBeforeRedirect(window.timeRemaining, window.currentSectionIndex);
+            // This is where you would handle the redirect to the OCR page
+        });
+
+        $('#confirmSubmitBtn').on('click', () => {
+            window.onbeforeunload = null;
+            submitExam();
+        });
+
+        showSection(window.currentSectionIndex);
+
+        if (sessionStorage.getItem("ocrquestion")) {
+            let [questionNo, answer] = JSON.parse(sessionStorage.getItem("ocrquestion"));
+            $(`textarea[data-question='${questionNo}']`).val(answer);
+            sessionStorage.removeItem("ocrquestion");
+            window.saveStateBeforeRedirect(window.timeRemaining, window.currentSectionIndex);
+        }
+    };
 
     window.onbeforeunload = () => "Are you sure you want to leave? Changes you made may not be saved.";
-
-    $(document).on("click", ".capture-btn, #confirmSubmitBtn", () => {
-        window.onbeforeunload = null;
-        if ($(this).is('#confirmSubmitBtn')) submitExam();
-    });
-
-    const sections = $('.question-section-card');
-    let currentSectionIndex = 0;
-    const prevSectionBtn = $('#prevSectionBtn');
-    const nextSectionBtn = $('#nextSectionBtn');
-    const submitExamBtn = $('#submitExamBtn');
-    const timerDisplay = $('#examTimer');
-
-    let timeRemaining = {{ $exam->duration_minutes }} * 60;
-    const timerInterval = setInterval(() => {
-        const minutes = Math.floor(timeRemaining / 60);
-        const seconds = timeRemaining % 60;
-        timerDisplay.text(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
-        if (timeRemaining-- <= 0) {
-            clearInterval(timerInterval);
-            alert("Time's up! Your exam has been automatically submitted.");
-            submitExam();
-        }
-    }, 1000);
-
-    const updateNavigationButtons = () => {
-        prevSectionBtn.prop('disabled', currentSectionIndex === 0);
-        nextSectionBtn.prop('disabled', currentSectionIndex === sections.length - 1);
-        submitExamBtn.toggle(currentSectionIndex === sections.length - 1);
-    };
-
-    const showSection = index => {
-        sections.hide().eq(index).show();
-        updateNavigationButtons();
-    };
-
-    prevSectionBtn.on('click', () => {
-        if (currentSectionIndex > 0) showSection(--currentSectionIndex);
-    });
-
-    nextSectionBtn.on('click', () => {
-        if (currentSectionIndex < sections.length - 1) showSection(++currentSectionIndex);
-    });
-
-    const submitExam = () => {
-        clearInterval(timerInterval);
-        console.log("Exam submitted!");
-        alert("Your exam has been submitted successfully!");
-    };
-
-    $(window).on("message", e => {
-        const { targetId, text } = e.originalEvent.data || {};
-        if (targetId && text) $(`#${targetId}`).val(text);
-    });
-
-    showSection(currentSectionIndex);
-});
 </script>
+

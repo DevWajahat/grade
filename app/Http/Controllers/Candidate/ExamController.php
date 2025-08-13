@@ -15,4 +15,8 @@ class ExamController extends Controller
 
         return view('screens.candidate.exam.index',get_defined_vars());
     }
+    public function submitExam()
+    {
+        
+    }
 }

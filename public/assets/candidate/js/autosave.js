@@ -3,43 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const SAVED_MESSAGE = "All changes saved";
     const statusElement = document.getElementById("autosave-status");
 
-    // Function to load saved data from sessionStorage
-    const loadFormData = () => {
-        const savedData = sessionStorage.getItem("formData");
-        if (savedData) {
-            try {
-                const formData = JSON.parse(savedData);
-                document.querySelectorAll("input, textarea").forEach(field => {
-                    const name = field.getAttribute("data-question");
-                    if (formData[name] !== undefined) {
-                        if (field.type === "radio") {
-                            console.log(field.value,formData[name]);
-
-                            if (field.value === formData[name]) {
-                                field.checked = true;
-                            }
-                        } else if (field.type === "checkbox") {
-                            field.checked = formData[name];
-                        } else {
-                            field.value = formData[name];
-                        }
-                    }
-                });
-                if (statusElement) {
-                    statusElement.textContent = SAVED_MESSAGE;
-                }
-            } catch (e) {
-                console.error("Could not parse saved data:", e);
-            }
-        }
-    };
-
-    // Function to save all form data to sessionStorage
-    const saveFormData = () => {
-        if (statusElement) {
-            statusElement.textContent = SAVING_MESSAGE;
-        }
-
+    const saveStateToSession = (time, sectionIndex) => {
         const formObject = {};
         document.querySelectorAll("input, textarea").forEach(field => {
             const name = field.getAttribute("data-question");
@@ -56,22 +20,52 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        sessionStorage.setItem("formData", JSON.stringify(formObject));
+        sessionStorage.setItem("examState", JSON.stringify({
+            formData: formObject,
+            timeRemaining: time,
+            currentSectionIndex: sectionIndex
+        }));
 
         if (statusElement) {
-            setTimeout(() => {
-                statusElement.textContent = SAVED_MESSAGE;
-            }, 1000);
+            statusElement.textContent = SAVED_MESSAGE;
+            setTimeout(() => statusElement.textContent = "", 2000);
         }
     };
 
-    // Load data on page load
-    loadFormData();
-
-    // Attach a single input event listener to the container to handle all inputs
-    document.querySelector(".container").addEventListener("input", (e) => {
-        if (e.target.matches("input, textarea")) {
-            saveFormData();
+    const loadStateFromSession = () => {
+        const savedState = sessionStorage.getItem("examState");
+        if (savedState) {
+            try {
+                const state = JSON.parse(savedState);
+                // Load form data
+                document.querySelectorAll("input, textarea").forEach(field => {
+                    const name = field.getAttribute("data-question");
+                    if (state.formData[name] !== undefined) {
+                        if (field.type === "radio") {
+                            if (field.value === state.formData[name]) {
+                                field.checked = true;
+                            }
+                        } else {
+                            field.value = state.formData[name];
+                        }
+                    }
+                });
+                return state;
+            } catch (e) {
+                console.error("Could not parse saved data:", e);
+                return null;
+            }
         }
-    });
+        return null;
+    };
+
+    const handleInput = () => {
+        if (statusElement) statusElement.textContent = SAVING_MESSAGE;
+        saveStateToSession(window.timeRemaining, window.currentSectionIndex);
+    };
+
+    loadStateFromSession();
+    document.querySelector("form").addEventListener("input", handleInput);
+
+    window.saveStateBeforeRedirect = saveStateToSession;
 });
