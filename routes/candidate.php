@@ -17,6 +17,6 @@ Route::controller(ExamController::class)->group(function () {
 });
 
 Route::controller(CameraController::class)->group(function () {
-    Route::get('camera/{index}','index')->name('camera.index');
-    Route::post('ocr/{index}','ocr')->name('ocr');
+    Route::get('camera/{index}/{id}','index')->name('camera');
+    Route::post('ocr/{index}/{id}','ocr')->name('ocr');
 });

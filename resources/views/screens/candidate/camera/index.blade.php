@@ -355,6 +355,7 @@
         let currentStream = null;
         let facingMode = "environment";
         let capturedImages = [];
+        let images = [];
         let targetTextareaId = null;
         let track = null;
 
@@ -381,19 +382,16 @@
             const preferredFacingMode = facing || facingMode;
 
             const potentialConstraints = [{
-                    video: {
-                        facingMode: preferredFacingMode
-                    }
+                video: {
+                    facingMode: preferredFacingMode
+                }
+            }, {
+                video: {
+                    facingMode: preferredFacingMode === "environment" ? "user" : "environment",
                 },
-                {
-                    video: {
-                        facingMode: preferredFacingMode === "environment" ? "user" : "environment",
-                    },
-                },
-                {
-                    video: true
-                },
-            ];
+            }, {
+                video: true
+            }, ];
 
             for (const constraints of potentialConstraints) {
                 try {
@@ -461,7 +459,7 @@
             }
         });
 
-        var images = [];
+
 
         takePhotoButton.addEventListener("click", async () => {
             if (!currentStream) {
@@ -484,96 +482,27 @@
 
             const imageDataUrl = photoCanvas.toDataURL("image/png");
             const base64Data = imageDataUrl.split(",")[1];
+            images.push(imageDataUrl)
 
             // showLoading("Extracting text...");
             hideLoading()
 
 
 
-            images.push(imageDataUrl)
 
             console.log(images)
             renderCapturedImages();
 
-            $.ajax({
-                type: 'POST',
-                url: "{{ route('candidate.ocr', $index) }}",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    images: JSON.stringify(images)
-                },
-                success: function(response) {
-                    console.log(response);
-                }
-            })
+            const newImage = {
+                base64: imageDataUrl,
+            };
 
-            try {
-                // const prompt =
-                //     "Extract all text from this image. Provide the text as a continuous string without formatting.";
-                // const payload = {
-                //     contents: [{
-                //         role: "user",
-                //         parts: [{
-                //                 text: prompt
-                //             },
-                //             {
-                //                 inlineData: {
-                //                     mimeType: "image/png",
-                //                     data: base64Data,
-                //                 },
-                //             },
-                //         ],
-                //     }, ],
-                //     generationConfig: {
-                //         responseMimeType: "text/plain",
-                //     },
-                // };
 
-                // const apiKey = "";
-                // const apiUrl =
-                //     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            capturedImages.push(newImage);
 
-                // const response = await fetch(apiUrl, {
-                //     method: "POST",
-                //     headers: {
-                //         "Content-Type": "application/json"
-                //     },
-                //     body: JSON.stringify(payload),
-                // });
 
-                // const result = await response.json();
-                // let ocrText = "Could not extract text.";
-                // if (
-                //     result.candidates &&
-                //     result.candidates.length > 0 &&
-                //     result.candidates[0].content &&
-                //     result.candidates[0].content.parts &&
-                //     result.candidates[0].content.parts.length > 0
-                // ) {
-                //     ocrText = result.candidates[0].content.parts[0].text;
-                // } else {
-                //     console.error("OCR API response structure unexpected:", result);
-                // }
-
-                // const newImage = {
-                //     base64: imageDataUrl,
-                //     ocrText: ocrText
-                // };
-                // capturedImages.push(newImage);
-            } catch (error) {
-                console.error("Error during OCR:", error);
-                alert(
-                    "Error processing image for text extraction. Please try again."
-                );
-                const newImage = {
-                    base64: imageDataUrl,
-                    ocrText: "Error: Could not extract text.",
-                };
-                capturedImages.push(newImage);
-                renderCapturedImages();
-            } finally {
-                hideLoading();
-            }
+            renderCapturedImages();
+            hideLoading();
         });
 
         function renderCapturedImages() {
@@ -603,6 +532,7 @@
 
         function removeCapturedImage(indexToRemove) {
             capturedImages.splice(indexToRemove, 1);
+            images.splice(indexToRemove,1);
             renderCapturedImages();
         }
 
@@ -613,33 +543,57 @@
                 )
             ) {
                 capturedImages = [];
+                images = [];
                 renderCapturedImages();
             }
         });
 
+
         sendToExamButton.addEventListener("click", () => {
-            if (!targetTextareaId) {
-                alert("Error: Target textarea not identified. Cannot send text.");
+            if (capturedImages.length === 0) {
+                alert("Please capture at least one image before submitting.");
                 return;
             }
 
-            const combinedText = capturedImages
-                .map((img) => img.ocrText)
-                .join("\n\n");
+            const base64Images = capturedImages.map(img => img.base64);
 
-            if (window.opener) {
-                window.opener.postMessage({
-                        type: "ocrResult",
-                        targetId: targetTextareaId,
-                        text: combinedText,
-                    },
-                    "*"
-                );
-                window.close();
-            } else {
-                alert("Could not send text: Parent window not found.");
-            }
+            showLoading("Sending images to server...");
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('candidate.ocr', ['index' => $index, 'id' => $id]) }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    images: base64Images
+                },
+                success: function(response) {
+                    hideLoading();
+                    console.log(response);
+                    console.log(response.value)
+                    var index = JSON.parse(response.value).index
+                    var extractedText = JSON.parse(response.value).extracted_text
+
+                    alert("Images submitted successfully!");
+
+                    var value = JSON.stringify([index,extractedText])
+
+                    sessionStorage.setItem('ocrquestion', value);
+                    // 
+                    window.location.href = "{{ route('candidate.exam.index', $id) }}";
+
+
+
+
+                    // window.close();
+                },
+                error: function(xhr, status, error) {
+                    hideLoading();
+                    console.error("Error submitting images:", error);
+                    alert("An error occurred while submitting images. Please try again.");
+                }
+            });
         });
+
 
         toggleFullScreenButton.addEventListener("click", () => {
             if (document.fullscreenElement) {

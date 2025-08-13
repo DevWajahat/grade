@@ -34,7 +34,7 @@
                             @endphp
                             @forelse ($question->options as $option)
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q{{ $i }}"
+                                    <input class="form-check-input" data-question="{{ $question->id }}" type="radio" name="q{{ $i }}"
                                         id="q{{ $i }}_option{{ $j }}"
                                         value="{{ $option->option_text }}" />
                                     <label class="form-check-label"
@@ -51,9 +51,10 @@
 
                         @if ($question->type == 'short-answer')
                             <div class="mb-3">
-                                <textarea class="form-control" name="q{{ $i }}" data-question="{{ $question->id }}" id="q{{ $i }}_answer" rows="3"
-                                    placeholder="Type your answer here..."></textarea>
-                                <a href="{{ route('candidate.camera.index',$question->id) }}" class="btn btn-outline-primary btn-sm capture-btn mt-2"
+                                <textarea class="form-control" name="q{{ $i }}" data-question="{{ $question->id }}"
+                                    id="q{{ $i }}_answer" rows="3" placeholder="Type your answer here..."></textarea>
+                                <a href="{{ route('candidate.camera', ['index' => $question->id, 'id' => $id]) }}"
+                                    class="btn btn-outline-primary btn-sm capture-btn mt-2"
                                     data-target-textarea="q{{ $i }}_answer">
                                     <i class="ri-camera-line me-2"></i> Capture Handwritten Answer
                                 </a>
@@ -116,116 +117,78 @@
 </div>
 
 
+
+<script src="{{ asset('assets/candidate/js/autosave.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
     integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-    $(document).ready(function() {
 
 
-                window.onbeforeunload = function() {
+  $(function() {
+    if (sessionStorage.getItem("ocrquestion")) {
+        let [questionNo, answer] = JSON.parse(sessionStorage.getItem("ocrquestion"));
+        $(`textarea[data-question='${questionNo}']`).val(answer);
+        sessionStorage.removeItem("ocrquestion")
+    }
 
-                    return "Are you sure you want to leave? Changes you made may not be saved.";
-                };
+    window.onbeforeunload = () => "Are you sure you want to leave? Changes you made may not be saved.";
 
-                $(document).on("click", ".capture-btn", function() {
-                    window.onbeforeunload = null;
-                })
+    $(document).on("click", ".capture-btn, #confirmSubmitBtn", () => {
+        window.onbeforeunload = null;
+        if ($(this).is('#confirmSubmitBtn')) submitExam();
+    });
 
+    const sections = $('.question-section-card');
+    let currentSectionIndex = 0;
+    const prevSectionBtn = $('#prevSectionBtn');
+    const nextSectionBtn = $('#nextSectionBtn');
+    const submitExamBtn = $('#submitExamBtn');
+    const timerDisplay = $('#examTimer');
 
-                const examDuration = {{ $exam->duration_minutes }} * 60;
-                let timeRemaining = examDuration;
-                const timerDisplay = $('#examTimer');
-                const sections = $('.question-section-card');
-                let currentSectionIndex = 0;
-                const prevSectionBtn = $('#prevSectionBtn');
-                const nextSectionBtn = $('#nextSectionBtn');
-                const submitExamBtn = $('#submitExamBtn');
-                const confirmSubmitBtn = $('#confirmSubmitBtn');
-                const captureButtons = $('.capture-btn');
+    let timeRemaining = {{ $exam->duration_minutes }} * 60;
+    const timerInterval = setInterval(() => {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        timerDisplay.text(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+        if (timeRemaining-- <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! Your exam has been automatically submitted.");
+            submitExam();
+        }
+    }, 1000);
 
-                function updateTimer() {
-                    const minutes = Math.floor(timeRemaining / 60);
-                    const seconds = timeRemaining % 60;
-                    timerDisplay.text(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+    const updateNavigationButtons = () => {
+        prevSectionBtn.prop('disabled', currentSectionIndex === 0);
+        nextSectionBtn.prop('disabled', currentSectionIndex === sections.length - 1);
+        submitExamBtn.toggle(currentSectionIndex === sections.length - 1);
+    };
 
-                    if (timeRemaining <= 0) {
-                        clearInterval(timerInterval);
-                        alert("Time's up! Your exam has been automatically submitted.");
-                        submitExam();
-                    } else {
-                        timeRemaining--;
-                    }
-                }
+    const showSection = index => {
+        sections.hide().eq(index).show();
+        updateNavigationButtons();
+    };
 
-                const timerInterval = setInterval(updateTimer, 1000);
-                updateTimer();
+    prevSectionBtn.on('click', () => {
+        if (currentSectionIndex > 0) showSection(--currentSectionIndex);
+    });
 
-                function showSection(index) {
-                    sections.hide().eq(index).show();
-                    updateNavigationButtons();
-                }
+    nextSectionBtn.on('click', () => {
+        if (currentSectionIndex < sections.length - 1) showSection(++currentSectionIndex);
+    });
 
-                function updateNavigationButtons() {
-                    prevSectionBtn.prop('disabled', currentSectionIndex === 0);
-                    nextSectionBtn.prop('disabled', currentSectionIndex === sections.length - 1);
-                    if (currentSectionIndex === sections.length - 1) {
-                        submitExamBtn.show();
-                    } else {
-                        submitExamBtn.hide();
-                    }
-                }
+    const submitExam = () => {
+        clearInterval(timerInterval);
+        console.log("Exam submitted!");
+        alert("Your exam has been submitted successfully!");
+    };
 
-                prevSectionBtn.on('click', function() {
-                    if (currentSectionIndex > 0) {
-                        currentSectionIndex--;
-                        showSection(currentSectionIndex);
-                    }
-                });
+    $(window).on("message", e => {
+        const { targetId, text } = e.originalEvent.data || {};
+        if (targetId && text) $(`#${targetId}`).val(text);
+    });
 
-                nextSectionBtn.on('click', function() {
-                    if (currentSectionIndex < sections.length - 1) {
-                        currentSectionIndex++;
-                        showSection(currentSectionIndex);
-                    }
-                });
-
-                confirmSubmitBtn.on('click', function() {
-                    submitExam();
-                    const modal = bootstrap.Modal.getInstance(document.getElementById("submitConfirmModal"));
-                    modal.hide();
-                });
-
-                function submitExam() {
-                    clearInterval(timerInterval);
-                    console.log("Exam submitted!");
-                    alert("Your exam has been submitted successfully!");
-                }
-
-                // captureButtons.on('click', function() {
-                    //     const targetTextareaId = $(this).data('target-textarea');
-                    //     window.open(
-                    //         `camera.html?targetTextareaId=${targetTextareaId}`,
-                    //         "_blank",
-                    //         "width=800,height=600,resizable,scrollbars"
-                    //     );
-                    // });
-
-                    $(window).on("message", function(event) {
-                        const originalEvent = event.originalEvent;
-                        if (originalEvent.data && originalEvent.data.type === "ocrResult") {
-                            const {
-                                targetId,
-                                text
-                            } = originalEvent.data;
-                            const targetTextarea = $(`#${targetId}`);
-                            if (targetTextarea.length) {
-                                targetTextarea.val(text);
-                            }
-                        }
-                    });
-
-                    showSection(currentSectionIndex);
-                });
+    showSection(currentSectionIndex);
+});
 </script>
