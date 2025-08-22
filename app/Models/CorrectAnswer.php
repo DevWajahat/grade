@@ -11,6 +11,6 @@ class CorrectAnswer extends Model
 
     public function question() :BelongsTo
     {
-        return $this->belongsTo(CorrectAnswer::class);
+        return $this->belongsTo(Question::class);
     }
 }

@@ -196,4 +196,5 @@ class ExamController extends Controller
             'redirect' => route('candidate.dashboard')
         ]);
     }
+
 }

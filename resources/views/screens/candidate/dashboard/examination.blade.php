@@ -31,7 +31,7 @@
                     <div class="exam-card">
                         <div class="exam-card-header">
                             <h2 class="exam-title">{{ $exam->title }}</h2>
-                            
+
                         </div>
                         <p class="text-secondary mb-3"></p>
                         <div class="d-flex flex-wrap mb-3">
@@ -67,7 +67,8 @@
         </div>
     </main>
 
-    <nav class="navbar navbar-light bg-white border navbar-expand fixed-bottom" style="height: 50px;">
+    @include('includes.candidate.bottomnav')
+    {{-- <nav class="navbar navbar-light bg-white border navbar-expand fixed-bottom" style="height: 50px;">
         <ul class="navbar-nav nav-justified w-100">
 
             <li class="nav-item"><a class="nav-link position-relative active" href="examination-hall.html">
@@ -87,6 +88,6 @@
                         </svg></div>Profile
                 </a></li>
         </ul>
-    </nav>
+    </nav> --}}
 @endsection
 <!-- Bootstrap JS CDN -->
