@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get("/", [IndexController::class, 'index'])->name('index');
+Route::get("/", [IndexController::class, 'index'])->name('index')->middleware('guest');
 
 Route::controller(AuthController::class)->middleware('guest')->group(function () {
     Route::get('register', 'register_view')->name('register');
@@ -16,4 +16,4 @@ Route::controller(AuthController::class)->middleware('guest')->group(function ()
     Route::get('login', 'login_view')->name('login');
     Route::post('login', 'login');
 });
-Route::get('logout',[AuthController::class,'logout'])->name('logout');
+Route::get('logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');

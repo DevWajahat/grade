@@ -5,6 +5,7 @@ use App\Http\Middleware\EnsureExaminerLogin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -29,6 +30,18 @@ return Application::configure(basePath: dirname(__DIR__))
             'EnsureCandidate' => EnsureCandidateLogin::class,
             'EnsureExaminer' => EnsureExaminerLogin::class,
         ]);
+
+        $middleware->redirectUsersTo(function (Request $request) {
+            $user = $request->user();
+
+            if ($user->role === 'candidate') {
+                return route('candidate.dashboard');
+            } elseif ($user->role === 'examiner') {
+                return route('examiner.index');
+            }
+
+            return route('index');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
