@@ -23,7 +23,7 @@ Route::prefix('exams')->controller(ExamController::class)->name('exams.')->group
     Route::get('edit/{id}', 'edit')->name('edit');
     Route::put('update/{id}', 'update')->name('update');
     Route::get('/{id}/data',  'getExamData')->name('.data');
-    Route::get('update-exam-status', 'updateExamStatus')->name('status.update');
+    Route::post('update-exam-status', 'updateExamStatus')->name('status.update');
     Route::get('exam-result/{id}', 'result')->name('result');
     Route::get('candidate-result-detail/{id}','candidateResult')->name('candidate.result');
 });

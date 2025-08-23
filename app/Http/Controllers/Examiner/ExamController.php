@@ -24,6 +24,17 @@ class ExamController extends Controller
 
         return view('screens.examiner.exams.create', get_defined_vars());
     }
+
+    public function updateExamStatus(Request $request)
+    {
+
+        $exam = Exam::find($request->id);
+        $exam->update(['status' => $request->status]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Status Updated Successfully.'
+        ]);
+    }
     public function store(Request $request)
     {
         // dd($request->all(),$request->sections);

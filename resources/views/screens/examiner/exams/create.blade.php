@@ -207,7 +207,7 @@
                                     <option selected value="">Select Type</option>
                                     <option value="multiple-choice">Multiple Choice</option>
                                     <option value="short-answer">Short Answer</option>
-                                    <option value="essay">Essay</option>
+                                    <option value="long-answer">Long Answer</option>
                                 </select>
                                 <div class="invalid-feedback">Please select a question type.</div>
                             </div>

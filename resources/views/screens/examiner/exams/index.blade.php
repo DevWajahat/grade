@@ -54,16 +54,17 @@
             <script>
                 $(document).ready(function() {
                     // Use a class selector to target all status dropdowns
-                    $('#status').on('change', function() {
+                    $('select').on('change', function() {
                         var newStatus = $(this).val();
-                        var examId = $(this).data('id');
+                        var examId = $(this).attr('data-id');
                         console.log(newStatus)
                         $.ajax({
                             type: 'POST', // Or 'PUT' if you prefer a RESTful approach
                             url: '{{ route('examiner.exams.status.update') }}', // The URL to your update route
                             data: {
                                 _token: "{{ csrf_token() }}",
-                                status: newStatus
+                                status: newStatus,
+                                id: examId
                             },
                             success: function(response) {
                                 console.log(response.message);

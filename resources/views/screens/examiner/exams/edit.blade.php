@@ -153,6 +153,7 @@
                     <option value="">Select Type</option>
                     <option value="multiple-choice" ${question.type === 'multiple-choice' ? 'selected' : ''}>Multiple Choice</option>
                     <option value="short-answer" ${question.type === 'short-answer' ? 'selected' : ''}>Short Answer</option>
+                    <option value="long-answer" ${question.type === 'long-answer' ? 'selected' : ''}>Long Answer</option>
                     <option value="essay" ${question.type === 'essay' ? 'selected' : ''}>Essay</option>
                 `;
                 return `

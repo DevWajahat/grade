@@ -1,4 +1,9 @@
 @include('includes.candidate.head')
+<div id="loader-overlay" class="loader-overlay">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 <main class="container py-4">
     <div class="exam-header-info">
         <h1 class="exam-title-display">{{ $exam->title }}</h1>
@@ -9,12 +14,10 @@
     </div>
 
     <form id="examForm" method="post" enctype="multipart/form-data">
-        <!-- Section A: Multiple Choice Questions -->
         @forelse ($exam->sections as $section)
             <div class="question-section-card">
                 <h2 class="section-heading">{{ $section->title }}</h2>
 
-                <!-- Question 1 -->
                 @php
                     $i = 1;
                 @endphp
@@ -89,7 +92,6 @@
     </button>
 </footer>
 
-<!-- Submit Confirmation Modal -->
 <div class="modal fade" id="submitConfirmModal" tabindex="-1" aria-labelledby="submitConfirmModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -116,13 +118,34 @@
     </div>
 </div>
 
+<style>
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1051; /* Higher than the modal (1050) */
+    }
 
+    /* Make the spinner larger */
+    .loader-overlay .spinner-border {
+        width: 4rem;
+        height: 4rem;
+        border-width: 0.4em;
+    }
+</style>
 
 <script src="{{ asset('assets/candidate/js/autosave.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
     integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     window.onload = () => {
         const sections = $('.question-section-card');
@@ -130,6 +153,7 @@
         const nextSectionBtn = $('#nextSectionBtn');
         const submitExamBtn = $('#submitExamBtn');
         const timerDisplay = $('#examTimer');
+        const loaderOverlay = $('#loader-overlay');
         let timeRemaining;
         let currentSectionIndex;
         const savedState = JSON.parse(sessionStorage.getItem("examState"));
@@ -176,7 +200,6 @@
         });
         const submitExam = () => {
             const formData = {};
-            const examId = {{ $exam->id }};
             $('#examForm').find('input[type="radio"]:checked, textarea').each(function() {
                 const questionId = $(this).data('question');
                 const answerContent = $(this).val();
@@ -186,6 +209,7 @@
             });
             clearInterval(timerInterval);
             window.onbeforeunload = null;
+            loaderOverlay.show();
             $.ajax({
                 url: `{{ route('candidate.submitexam',$id) }}`,
                 method: 'POST',
@@ -195,18 +219,36 @@
                     answers: formData
                 },
                 success: function(response) {
+                    loaderOverlay.hide();
                     if (response.success) {
                         sessionStorage.removeItem("examState");
                         sessionStorage.removeItem("ocrquestion");
-                        alert(response.message);
-                        window.location.href = response.redirect;
+                        Swal.fire({
+                            title: 'Success!',
+                            text: response.message,
+                            icon: 'success',
+                            timer: 1000,
+                            timerProgressBar: true,
+                            didClose: () => {
+                                window.location.href = response.redirect;
+                            }
+                        });
                     } else {
-                        alert(response.message);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: response.message,
+                            icon: 'error'
+                        });
                     }
                 },
                 error: function(xhr) {
+                    loaderOverlay.hide();
                     const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'An unexpected error occurred.';
-                    alert('Error submitting exam: ' + errorMsg);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error submitting exam: ' + errorMsg,
+                        icon: 'error'
+                    });
                 }
             });
         };
