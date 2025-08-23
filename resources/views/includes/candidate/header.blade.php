@@ -28,12 +28,12 @@
                 <!-- End Profile Component -->
 
                 <ul class="list-group list-group-flush mb-auto">
-                    <li class="list-group-item"><a href="#"
+                    <li class="list-group-item"><a href="{{ route('candidate.dashboard') }}"
                             class="text-decoration-none text-dark">Dashboard</a></li>
-                    <li class="list-group-item"><a href="#"
+                    {{-- <li class="list-group-item"><a href="#"
                             class="text-decoration-none text-dark">Settings</a></li>
-                    <li class="list-group-item"><a href="#" class="text-decoration-none text-dark">Help</a>
-                    </li>
+                    <li class="list-group-item"><a href="" class="text-decoration-none text-dark">Help</a>
+                    </li> --}}
                 </ul>
 
                 <div class="mt-4">
