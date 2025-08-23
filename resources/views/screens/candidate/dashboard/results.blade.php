@@ -2,7 +2,6 @@
 @section('content')
     <main class="container py-4">
         <div class="row">
-            <!-- Summary Cards -->
             <div class="col-6 col-md-3">
                 <div class="summary-card">
                     <i class="ri-file-text-line summary-card-icon"></i>
@@ -40,116 +39,66 @@
                 </div>
             </div>
 
-            <!-- All Exam Results -->
             <div class="col-lg-8">
                 <div class="exam-results-card">
                     <h3 class="card-title-main">All Exam Results</h3>
 
-                    @forelse ($examHall->exams as $exam)
-                        @forelse (auth()->user()->user_exam_attempts as $exam_attempt)
-                            @if ($exam_attempt->exam_id == $exam->id)
-                                <a href="{{ route('candidate.exam.result', $exam->id) }}">
-                                    <div class="exam-result-item">
-                                        <div class="exam-result-info">
-                                            <i class="ri-check-line"></i>
-                                            <div class="exam-result-text">
-                                                <div class="exam-name">{{ $exam->title }}</div>
-                                                <div class="exam-date" data-timestamp="{{ $exam_attempt->created_at }}">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex align-items-center">
-                                            @php
-                                                $percentage = 0;
-                                                if ($exam->total_marks > 0) {
-                                                    $percentage = number_format(
-                                                        ($exam_attempt->total_marks / $exam->total_marks) * 100,
-                                                        2,
-                                                    );
-                                                }
-                                            @endphp
-                                            <span class="exam-score me-2">{{ $percentage }}%</span>
-                                            <span class="exam-status">Completed</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            @else
+                    {{-- Loop through all public exams and check for user's attempt --}}
+                    @forelse ($exams as $exam)
+                        @php
+                            // Check if the user has an attempt for this specific exam
+                            $exam_attempt = $examAttempts->get($exam->id);
+                        @endphp
+
+                        @if ($exam_attempt)
+                            {{-- Display completed exam details --}}
+                            <a href="{{ route('candidate.exam.result', $exam->id) }}">
                                 <div class="exam-result-item">
                                     <div class="exam-result-info">
-                                        <i class="ri-close-fill" style="color: red"></i>
+                                        <i class="ri-check-line"></i>
                                         <div class="exam-result-text">
                                             <div class="exam-name">{{ $exam->title }}</div>
-                                            <div class="exam-date" data-timestamp="{{ $exam_attempt->created_at }}"></div>
+                                            <div class="exam-date" data-timestamp="{{ $exam_attempt->created_at->timestamp }}"></div>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center">
-
-                                        <span class="exam-score me-2 color-secondary" style="color:grey">0</span>
-                                        <span class="exam-status">Not Attempt</span>
+                                        @php
+                                            $percentage = 0;
+                                            if ($exam->total_marks > 0) {
+                                                $percentage = number_format(($exam_attempt->total_marks / $exam->total_marks) * 100, 2);
+                                            }
+                                        @endphp
+                                        <span class="exam-score me-2">{{ $percentage }}%</span>
+                                        <span class="exam-status">Completed</span>
                                     </div>
                                 </div>
-                            @endif
-                        @empty
-                        @endforelse
-
+                            </a>
+                        @else
+                            {{-- Display not attempted exam details --}}
+                            <div class="exam-result-item">
+                                <div class="exam-result-info">
+                                    <i class="ri-close-fill" style="color: red"></i>
+                                    <div class="exam-result-text">
+                                        <div class="exam-name">{{ $exam->title }}</div>
+                                        <div class="exam-date"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="exam-score me-2 color-secondary" style="color:grey">N/A</span>
+                                    <span class="exam-status">Not Attempted</span>
+                                </div>
+                            </div>
+                        @endif
                     @empty
+                        <div class="text-center py-4">
+                            <p>No exams are available in this exam hall yet.</p>
+                        </div>
                     @endforelse
-                    {{--
-                    <div class="exam-result-item">
-                        <div class="exam-result-info">
-                            <i class="ri-check-line"></i>
-                            <div class="exam-result-text">
-                                <div class="exam-name">Physics Midterm</div>
-                                <div class="exam-date">2025-01-12</div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="exam-score me-2">92%</span>
-                            <span class="exam-status">Completed</span>
-                        </div>
-                    </div>
-
-                    <div class="exam-result-item">
-                        <div class="exam-result-info">
-                            <i class="ri-check-line"></i>
-                            <div class="exam-result-text">
-                                <div class="exam-name">Chemistry Quiz</div>
-                                <div class="exam-date">2025-01-10</div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="exam-score me-2">78%</span>
-                            <span class="exam-status">Completed</span>
-                        </div>
-                    </div>
-                    <div class="exam-result-item">
-                        <div class="exam-result-info">
-                            <i class="ri-check-line"></i>
-                            <div class="exam-result-text">
-                                <div class="exam-name">History Final</div>
-                                <div class="exam-date">2024-12-01</div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="exam-score me-2">88%</span>
-                            <span class="exam-status">Completed</span>
-                        </div>
-                    </div>
-                    <div class="exam-result-item">
-                        <div class="exam-result-info">
-                            <i class="ri-check-line"></i>
-                            <div class="exam-result-text">
-                                <div class="exam-name">Biology Midterm</div>
-                                <div class="exam-date">2024-11-20</div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="exam-score me-2">75%</span>
-                            <span class="exam-status">Completed</span>
-                        </div>
-                    </div> --}}
                 </div>
             </div>
+
+            <div class="col-lg-4">
+                </div>
         </div>
     </main>
 
@@ -161,7 +110,6 @@
             $('.exam-date').each(function() {
                 var timestamp = parseInt($(this).attr('data-timestamp'));
 
-                // Check if the timestamp is a valid number
                 if (!isNaN(timestamp)) {
                     var date = new Date(timestamp * 1000);
                     var formattedDate = date.toDateString();
@@ -173,4 +121,4 @@
             });
         });
     </script>
-@endpush
+@endpush    

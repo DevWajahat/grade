@@ -15,7 +15,7 @@ class ExamHall extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function users(): BelongsToMany
+    public function hall_users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'hall_user');
     }

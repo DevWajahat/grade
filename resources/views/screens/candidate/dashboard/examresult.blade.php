@@ -182,6 +182,11 @@
     <body>
 
         <div class="main-container">
+            <!-- Back Button -->
+            <a href="#" onclick="history.back()" class="btn btn-secondary mb-4">
+                <i class="ri-arrow-left-line"></i> Back
+            </a>
+
             <div class="exam-header">
                 <h1 class="mb-0">Exam Results</h1>
             </div>
@@ -210,37 +215,40 @@
                         @forelse ($section->questions as $question)
                             @php
                                 // Find the user's answer for this specific question
-                                $userAnswer = $examAttempt->userAnswers->firstWhere('question_id', $question->id);
+$userAnswer = $examAttempt->userAnswers->firstWhere('question_id', $question->id);
 
-                                $userAnswerText = $userAnswer->answer_content ?? 'Not answered';
-                                $correctAnswerText = $question->correctAnswer->answer_content ?? 'Not available';
+$userAnswerText = $userAnswer->answer_content ?? 'Not answered';
+$correctAnswerText = $question->correctAnswer->answer_content ?? 'Not available';
 
-                                $questionStatusClass = '';
-                                $statusText = '';
-                                $iconClass = '';
+$questionStatusClass = '';
+$statusText = '';
+$iconClass = '';
 
-                                if ($userAnswer) {
-                                    if ($question->type === 'multiple-choice') {
-                                        $isCorrect = ($userAnswerText === $correctAnswerText);
-                                        $questionStatusClass = $isCorrect ? 'correct' : 'incorrect';
-                                        $statusText = $isCorrect ? 'Correct (' . $question->marks . ' Marks)' : 'Incorrect (0 Marks)';
-                                        $iconClass = $isCorrect ? 'ri-check-line' : 'ri-close-line';
-                                    } else {
-                                        // For short/long answer questions
-                                        if ($userAnswer->marks !== null) {
-                                            $questionStatusClass = $userAnswer->marks > 0 ? 'correct' : 'incorrect';
-                                            $statusText = 'Graded (' . $userAnswer->marks . ' / ' . $question->marks . ' Marks)';
-                                            $iconClass = $userAnswer->marks > 0 ? 'ri-check-line' : 'ri-close-line';
-                                        } else {
-                                            $questionStatusClass = 'graded';
-                                            $statusText = 'To be graded (' . $question->marks . ' Marks)';
-                                            $iconClass = 'ri-edit-line';
-                                        }
-                                    }
-                                } else {
-                                    $questionStatusClass = 'incorrect';
-                                    $statusText = 'Not Answered';
-                                    $iconClass = 'ri-close-line';
+if ($userAnswer) {
+    if ($question->type === 'multiple-choice') {
+        $isCorrect = $userAnswerText === $correctAnswerText;
+        $questionStatusClass = $isCorrect ? 'correct' : 'incorrect';
+        $statusText = $isCorrect
+            ? 'Correct (' . $question->marks . ' Marks)'
+            : 'Incorrect (0 Marks)';
+        $iconClass = $isCorrect ? 'ri-check-line' : 'ri-close-line';
+    } else {
+        // For short/long answer questions
+        if ($userAnswer->marks !== null) {
+            $questionStatusClass = $userAnswer->marks > 0 ? 'correct' : 'incorrect';
+            $statusText =
+                'Graded (' . $userAnswer->marks . ' / ' . $question->marks . ' Marks)';
+            $iconClass = $userAnswer->marks > 0 ? 'ri-check-line' : 'ri-close-line';
+        } else {
+            $questionStatusClass = 'graded';
+            $statusText = 'To be graded (' . $question->marks . ' Marks)';
+            $iconClass = 'ri-edit-line';
+        }
+    }
+} else {
+    $questionStatusClass = 'incorrect';
+    $statusText = 'Not Answered';
+    $iconClass = 'ri-close-line';
                                 }
                             @endphp
                             <div class="accordion-item">
@@ -266,7 +274,8 @@
                                             <p><strong>Your Answer:</strong></p>
                                             <ul class="options-list">
                                                 @foreach ($question->options as $option)
-                                                    <li class="option-item
+                                                    <li
+                                                        class="option-item
                                                         @if ($option->option_text === $correctAnswerText) is-correct @endif
                                                         @if ($option->option_text === $userAnswerText && $option->option_text !== $correctAnswerText) is-incorrect @endif">
                                                         {{ $option->option_text }}
@@ -285,17 +294,19 @@
                                                 {{ $userAnswerText }}
                                             </div>
                                             @if ($correctAnswerText !== 'Not available')
-                                                <a class="correct-answer-feedback-toggle collapsed" data-bs-toggle="collapse"
-                                                    href="#feedback-{{ $question->id }}" aria-expanded="false"
-                                                    aria-controls="feedback-{{ $question->id }}">
-                                                    <i class="ri-arrow-right-s-fill me-1"></i> View Correct Answer & Feedback
+                                                <a class="correct-answer-feedback-toggle collapsed"
+                                                    data-bs-toggle="collapse" href="#feedback-{{ $question->id }}"
+                                                    aria-expanded="false" aria-controls="feedback-{{ $question->id }}">
+                                                    <i class="ri-arrow-right-s-fill me-1"></i> View Correct Answer &
+                                                    Feedback
                                                 </a>
                                                 <div class="collapse mt-3" id="feedback-{{ $question->id }}">
                                                     <div class="feedback-box">
                                                         <p><strong>Correct Answer:</strong></p>
                                                         <p class="mb-2">{{ $correctAnswerText }}</p>
                                                         <p class="mb-0"><strong>Feedback:</strong></p>
-                                                        <p class="mb-0">{{ $userAnswer->feedback ?? 'No feedback available.' }}</p>
+                                                        <p class="mb-0">
+                                                            {{ $userAnswer->feedback ?? 'No feedback available.' }}</p>
                                                     </div>
                                                 </div>
                                             @endif

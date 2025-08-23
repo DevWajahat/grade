@@ -53,11 +53,11 @@ class DashboardController extends Controller
         $examHall = ExamHall::where('hall_code', $code)->firstOrFail();
         $user = auth()->user();
 
-        // Get all exams associated with the exam hall
-        $exams = $examHall->exams;
+        // Get all public exams associated with the exam hall
+        $exams = $examHall->exams()->where('status', 'public')->get();
 
-        // Get all exam attempts by the current user for exams in this hall
-        $examAttempts = $user->user_exam_attempts()->whereIn('exam_id', $exams->pluck('id'))->get();
+        // Get all exam attempts by the current user for these exams
+        $examAttempts = $user->user_exam_attempts()->whereIn('exam_id', $exams->pluck('id'))->get()->keyBy('exam_id');
 
         // Calculate metrics for summary cards
         $totalExams = $exams->count();
@@ -114,5 +114,12 @@ class DashboardController extends Controller
         }
 
         return view('screens.candidate.dashboard.examresult', compact('examAttempt', 'exam'));
+    }
+
+    public function people($code)
+    {
+        $examHall = ExamHall::where('hall_code',$code)->first();
+
+        return view('screens.candidate.dashboard.people',get_defined_vars());
     }
 }

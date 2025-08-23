@@ -96,7 +96,7 @@
  <script src="{{ asset('assets/web/js/glightbox.min.js') }}"></script>
  <script src="{{ asset('assets/web/js/wow.min.js') }}"></script>
  <script src="{{ asset('assets/web/js/main.js') }}"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
      integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
  </script>

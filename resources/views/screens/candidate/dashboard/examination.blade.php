@@ -54,7 +54,7 @@
                             @endforelse
                         </div>
                         <div class="mt-4">
-                            <a href="{{ route('candidate.exam.index',$exam->id) }}" class="btn btn-primary">Start Exams</a>
+                            <button {{ auth()->user()->user_exam_attempts->where('exam_id',$exam->id)->first() ? 'disabled' : '' }} onclick="window.location.href='{{ route('candidate.exam.index',$exam->id) }}'" class="btn btn-primary">Start Exams</button>
                         </div>
                     </div>
 

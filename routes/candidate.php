@@ -11,6 +11,7 @@ Route::controller(DashboardController::class)->group(function () {
     Route::get('examination/{code}', 'examination')->name('examination');
     Route::get('results/{code}', 'results')->name('results');
     Route::get('exam-result/{id}', 'examResult')->name('exam.result');
+    Route::get('people/{code}', 'people')->name('people');
 });
 
 
