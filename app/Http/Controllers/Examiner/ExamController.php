@@ -64,7 +64,7 @@ class ExamController extends Controller
         }
 
 
-        return redirect()->route('examiner.exams.index');
+        return redirect()->route('examiner.exams.index')->with('message', 'exam added successfully.');
     }
 
     public function edit($id)

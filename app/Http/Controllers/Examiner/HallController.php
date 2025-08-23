@@ -14,7 +14,7 @@ class HallController extends Controller
     {
 
         $halls = auth()->user()->exam_halls()->get();
-        
+
 
         return view('screens.examiner.halls.index',get_defined_vars());
     }
@@ -34,7 +34,7 @@ class HallController extends Controller
 
 
 
-        return back()->with('message', 'Hall added Successfully.');
+        return redirect()->route('examiner.hall.index')->with('message', 'Hall added Successfully.');
     }
     public function edit($id)
     {
@@ -52,6 +52,12 @@ class HallController extends Controller
             'title' => $request->title
         ]);
 
-        return redirect()->route('examiner.hall.index');
+        return redirect()->route('examiner.hall.index')->with('message','Hall Updated Successfully.');
+    }
+    public function hallCandidates($id)
+    {
+        $hall = ExamHall::find($id);
+
+        return view('screens.examiner.halls.candidates',get_defined_vars());
     }
 }

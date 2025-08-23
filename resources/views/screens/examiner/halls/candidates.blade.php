@@ -16,27 +16,30 @@
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Title</th>
-                                <th scope="col">Hall Code</th>
-                                <th scope="col">Actions</th>
+                                <th scope="col">First Name</th>
+                                <th scope="col">Last Name</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Guardian Name</th>
+                                <th scope="col">Guardian Phone</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse ($hall->hall_users as $user)
 
-                            @forelse ($halls as $hall)
-                                <tr>
-                                    <th scope="row">{{ $hall->id }}</th>
-                                    <td>{{ $hall->title }}</td>
-                                    <td>{{ $hall->hall_code }}</td>
-                                    <td><a href="{{ route('examiner.hall.edit', $hall->id) }}"
-                                            class="btn btn-warning">Edit</a>
-                                            <a href="{{ route('examiner.hall.candidates', $hall->id) }}"
-                                                class="btn btn-primary">View Candidates </a>
-                                            </td>
-
-                                </tr>
+                            <tr>
+                                <th scope="row">{{ $user->id }} </th>
+                                <th scope="row">{{ $user->first_name }} </th>
+                                <th scope="row">{{ $user->last_name }} </th>
+                                <th scope="row">{{ $user->phone }} </th>
+                                <th scope="row">{{ $user->email }} </th>
+                                <th scope="row">{{ $user->guardian_name }} </th>
+                                <th scope="row">{{ $user->guardian_phone }} </th>
+                            </tr>
                             @empty
+
                             @endforelse
+
                         </tbody>
                     </table>
                 </div>

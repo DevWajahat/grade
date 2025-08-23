@@ -13,6 +13,7 @@ Route::prefix('halls')->controller(HallController::class)->name('hall.')->group(
     Route::post('store', 'store')->name('store');
     Route::get('edit/{id}', 'edit')->name('edit');
     Route::post('update/{id}', 'update')->name('update');
+    Route::get('hall-candidates/{id}','hallCandidates')->name('candidates');
 });
 
 Route::prefix('exams')->controller(ExamController::class)->name('exams.')->group(function () {
