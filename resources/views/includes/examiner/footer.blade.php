@@ -19,11 +19,11 @@
 <script src="{{ asset('assets/examiner/lib/tempusdominus/js/moment.min.js') }}"></script>
 <script src="{{ asset('assets/examiner/lib/tempusdominus/js/moment-timezone.min.js') }}"></script>
 <script src="{{ asset('assets/examiner/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js') }}"></script>
-
-<!-- Template Javascript -->
 <script src="{{ asset('assets/examiner/js/main.js') }}"></script>
 
+<!-- Template Javascript -->
 @stack('scripts')
+
 </body>
 
 </html>

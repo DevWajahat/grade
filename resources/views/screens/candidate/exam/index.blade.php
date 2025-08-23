@@ -49,7 +49,7 @@
                             @endforelse
                         @endif
 
-                        @if ($question->type == 'short-answer')
+                        @if ($question->type == 'short-answer' || $question->type == 'long-answer' )
                             <div class="mb-3">
                                 <textarea class="form-control" name="q{{ $i }}" data-question="{{ $question->id }}"
                                     id="q{{ $i }}_answer" rows="3" placeholder="Type your answer here..."></textarea>

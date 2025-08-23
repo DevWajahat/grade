@@ -68,7 +68,7 @@
                 <div class="navbar-nav w-100">
                     <a href="{{ route('examiner.index') }}" class="nav-item nav-link "><i
                             class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                
+
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle {{ Route::currentRouteName() == 'examiner.exams.create' || Route::currentRouteName() == 'examiner.exams.index' ? 'active' : '' }}" data-bs-toggle="dropdown" ><i
                                 class="fa fa-laptop me-2"></i>Exams</a>
@@ -158,7 +158,7 @@
                             <a href="#" class="dropdown-item text-center">See all message</a>
                         </div>
                     </div> -->
-                    <div class="nav-item dropdown">
+                    {{-- <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fa fa-bell me-lg-2"></i>
                             <span class="d-none d-lg-inline-flex">Notificatin</span>
@@ -181,7 +181,7 @@
                             <hr class="dropdown-divider">
                             <a href="#" class="dropdown-item text-center">See all notifications</a>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <img class="rounded-circle me-lg-2" src="{{ asset('assets/examiner/img/user.jpg') }}"

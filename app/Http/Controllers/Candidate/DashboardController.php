@@ -118,8 +118,8 @@ class DashboardController extends Controller
 
     public function people($code)
     {
-        $examHall = ExamHall::where('hall_code',$code)->first();
+        $examHall = ExamHall::where('hall_code', $code)->first();
 
-        return view('screens.candidate.dashboard.people',get_defined_vars());
+        return view('screens.candidate.dashboard.people', get_defined_vars());
     }
 }

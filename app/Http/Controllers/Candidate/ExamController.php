@@ -18,7 +18,16 @@ class ExamController extends Controller
         $exam = Exam::with(['sections.questions.options'])->find($id);
         return view('screens.candidate.exam.index', get_defined_vars());
     }
+    public function updateExamStatus(Request $request)
+    {
 
+        $exam = Exam::find($request->exam_id);
+        $exam->update(['status' => $request->status]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Status Updated Successfully.'
+        ]);
+    }
     public function submitExam(Request $request, $id)
     {
 
@@ -196,5 +205,4 @@ class ExamController extends Controller
             'redirect' => route('candidate.dashboard')
         ]);
     }
-
 }
