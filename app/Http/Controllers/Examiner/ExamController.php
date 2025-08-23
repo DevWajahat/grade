@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Examiner;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\ExamHall;
+use App\Models\UserExamAttempt;
 use Illuminate\Http\Request;
 
 class ExamController extends Controller
@@ -31,6 +32,7 @@ class ExamController extends Controller
         $exam =  auth()->user()->exams()->create([
             'title' => $request->exam_title,
             'exam_hall_id' => $request->exam_hall,
+            'total_marks' => $request->exam_total_marks,
             'duration_minutes' => $request->exam_duration
         ]);
 
@@ -96,6 +98,7 @@ class ExamController extends Controller
         $exam->update([
             'title' => $request->exam_title,
             'exam_hall_id' => $request->exam_hall,
+            'total_marks' => $request->exam_total_marks,
             'duration_minutes' => $request->exam_duration
         ]);
 
@@ -141,5 +144,29 @@ class ExamController extends Controller
         }
 
         return redirect()->route('examiner.exams.index');
+    }
+
+    public function result($id)
+    {
+        $userExamAttempts = UserExamAttempt::where('exam_id', $id)->get();
+
+        return view('screens.examiner.exams.result', get_defined_vars());
+    }
+    public function candidateResult($id)
+    {
+
+        $examAttempt = UserExamAttempt::find($id)->with([
+            'userAnswers' => function ($query) {
+                $query->with(['question', 'question.options', 'question.correctAnswer']);
+            }
+        ])
+            ->first();;
+        $exam = Exam::with('sections.questions.options')->find($examAttempt->exam->id);
+
+        if (!$examAttempt || !$exam) {
+            abort(404, 'Exam results not found.');
+        }
+
+        return view('screens.examiner.exams.candidate-result', get_defined_vars());
     }
 }

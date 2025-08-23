@@ -38,6 +38,7 @@
                                     <td>
                                         <a href="{{ route('examiner.exams.edit', $exam->id) }}"
                                             class="btn btn-warning">Edit</a>
+                                        <a href="{{ route('examiner.exams.result',$exam->id) }}" class="btn btn-primary">View Results</a>
                                     </td>
                                 </tr>
 
@@ -59,7 +60,7 @@
                         console.log(newStatus)
                         $.ajax({
                             type: 'POST', // Or 'PUT' if you prefer a RESTful approach
-                            url: '{{ route("examiner.exams.status.update") }}', // The URL to your update route
+                            url: '{{ route('examiner.exams.status.update') }}', // The URL to your update route
                             data: {
                                 _token: "{{ csrf_token() }}",
                                 status: newStatus

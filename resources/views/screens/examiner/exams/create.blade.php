@@ -90,6 +90,12 @@
                         <div class="invalid-feedback">Please enter an exam title.</div>
                     </div>
                     <div class="col-md-4">
+                        <label for="examTitle" class="form-label">Exam Total Marks</label>
+                        <input type="number" class="form-control" id="examTotalMarks" name="exam_total_marks"
+                            placeholder="e.g., 100">
+                        <div class="invalid-feedback">Give Total Marks</div>
+                    </div>
+                    <div class="col-md-4">
                         <label for="examDuration" class="form-label">Duration (minutes)</label>
                         <input type="number" class="form-control" id="examDuration" name="exam_duration"
                             placeholder="e.g., 90">

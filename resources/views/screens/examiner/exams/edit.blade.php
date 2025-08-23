@@ -8,24 +8,73 @@
             --dark: #191C24;
             --light: #F3F6F9;
         }
-        .form-label { font-weight: 600; }
-        .btn-primary { background-color: var(--primary); border-color: var(--primary); }
-        .btn-primary:hover { background-color: #0d6efd; border-color: #0d6efd; }
-        .btn-secondary { background-color: var(--secondary); border-color: var(--secondary); }
-        .btn-secondary:hover { background-color: #5c0cdb; border-color: #5c0cdb; }
-        .btn-danger { background-color: #dc3545; border-color: #dc3545; }
-        .option-container .input-group-text { background-color: #ffffff; }
-        .form-control.is-invalid, .form-select.is-invalid, .was-validated .form-control:invalid, .was-validated .form-select:invalid { border-color: #dc3545 !important; }
-        .invalid-feedback { display: none; width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545; }
-        .is-invalid~.invalid-feedback { display: block !important; }
-        .form-control{ color:#000 !important; }
-        .form-select{ color:#000 }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5c0cdb;
+            border-color: #5c0cdb;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .option-container .input-group-text {
+            background-color: #ffffff;
+        }
+
+        .form-control.is-invalid,
+        .form-select.is-invalid,
+        .was-validated .form-control:invalid,
+        .was-validated .form-select:invalid {
+            border-color: #dc3545 !important;
+        }
+
+        .invalid-feedback {
+            display: none;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #dc3545;
+        }
+
+        .is-invalid~.invalid-feedback {
+            display: block !important;
+        }
+
+        .form-control {
+            color: #000 !important;
+        }
+
+        .form-select {
+            color: #000
+        }
     </style>
 
     <div class="container-fluid pt-4 px-4">
         <div class="card p-4">
             <h5 class="mb-4">Edit Examination</h5>
-            <form id="examinationForm" method="post" action="{{ route('examiner.exams.update', $exam->id) }}" data-exam-id="{{ $exam->id }}" novalidate>
+            <form id="examinationForm" method="post" action="{{ route('examiner.exams.update', $exam->id) }}"
+                data-exam-id="{{ $exam->id }}" novalidate>
                 @csrf
                 @method('PUT')
                 <div class="row g-3 mb-4">
@@ -34,7 +83,8 @@
                         <select class="form-select" id="examHall" name="exam_hall" aria-label="Examination Hall">
                             <option value="">Select a Hall</option>
                             @forelse ($halls as $hall)
-                                <option value="{{ $hall->id }}" {{ $hall->id == $exam->hall_id ? 'selected' : '' }}>{{ $hall->title }}</option>
+                                <option value="{{ $hall->id }}" {{ $hall->id == $exam->hall_id ? 'selected' : '' }}>
+                                    {{ $hall->title }}</option>
                             @empty
                             @endforelse
                         </select>
@@ -42,12 +92,20 @@
                     </div>
                     <div class="col-md-4">
                         <label for="examTitle" class="form-label">Exam Title</label>
-                        <input type="text" class="form-control" value="{{ $exam->title }}" id="examTitle" name="exam_title" placeholder="e.g., Midterm Exam - Q1 2025">
+                        <input type="text" class="form-control" value="{{ $exam->title }}" id="examTitle"
+                            name="exam_title" placeholder="e.g., Midterm Exam - Q1 2025">
                         <div class="invalid-feedback">Please enter an exam title.</div>
                     </div>
                     <div class="col-md-4">
+                        <label for="examTitle" class="form-label">Exam Total Marks</label>
+                        <input type="number" class="form-control" id="examTotalMarks" name="exam_total_marks"
+                            placeholder="e.g., 100">
+                        <div class="invalid-feedback">Give Total Marks</div>
+                    </div>
+                    <div class="col-md-4">
                         <label for="examDuration" class="form-label">Duration (minutes)</label>
-                        <input type="number" class="form-control" value="{{ $exam->duration_minutes }}" id="examDuration" name="exam_duration" placeholder="e.g., 90">
+                        <input type="number" class="form-control" value="{{ $exam->duration_minutes }}" id="examDuration"
+                            name="exam_duration" placeholder="e.g., 90">
                         <div class="invalid-feedback">Please enter a valid duration.</div>
                     </div>
                 </div>
@@ -57,8 +115,10 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-4">
-                    <button type="button" class="btn btn-success add-section-btn"><i class="ri-add-line me-1"></i>Add Section</button>
-                    <button type="submit" class="btn btn-primary"><i class="ri-save-line me-1"></i>Update Examination</button>
+                    <button type="button" class="btn btn-success add-section-btn"><i class="ri-add-line me-1"></i>Add
+                        Section</button>
+                    <button type="submit" class="btn btn-primary"><i class="ri-save-line me-1"></i>Update
+                        Examination</button>
                 </div>
             </form>
         </div>
@@ -128,7 +188,8 @@
             };
 
             const createSectionCardHtml = (sIndex, section = {}) => {
-                const sectionTitleHtml = section.title ? `<input type="hidden" name="sections[${sIndex}][title]" value="${section.title}">` : '';
+                const sectionTitleHtml = section.title ?
+                    `<input type="hidden" name="sections[${sIndex}][title]" value="${section.title}">` : '';
                 return `
                     <div class="section-card card mb-4">
                         <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -209,16 +270,22 @@
                 examinationForm.find('.section-card').each((sIndex, sectionCard) => {
                     const $sectionCard = $(sectionCard);
                     $sectionCard.find('.card-header h6').text(`Section ${sIndex + 1}`);
-                    $sectionCard.find('.remove-section-btn').toggle(sectionsContainer.find('.section-card').length > 1);
+                    $sectionCard.find('.remove-section-btn').toggle(sectionsContainer.find(
+                        '.section-card').length > 1);
 
                     $sectionCard.find('.question-card').each((qIndex, questionCard) => {
                         const $questionCard = $(questionCard);
-                        $questionCard.find('.card-body .d-flex h6').text(`Question ${qIndex + 1}`);
-                        $questionCard.find('.remove-question-btn').toggle($questionCard.closest('.questions-container').find('.question-card').length > 1);
+                        $questionCard.find('.card-body .d-flex h6').text(
+                            `Question ${qIndex + 1}`);
+                        $questionCard.find('.remove-question-btn').toggle($questionCard.closest(
+                            '.questions-container').find('.question-card').length > 1);
 
-                        $questionCard.find('textarea.form-control').attr('name', `sections[${sIndex}][questions][${qIndex}][text]`);
-                        $questionCard.find('select.question-type-select').attr('name', `sections[${sIndex}][questions][${qIndex}][type]`);
-                        $questionCard.find('input.question-marks-input').attr('name', `sections[${sIndex}][questions][${qIndex}][marks]`);
+                        $questionCard.find('textarea.form-control').attr('name',
+                            `sections[${sIndex}][questions][${qIndex}][text]`);
+                        $questionCard.find('select.question-type-select').attr('name',
+                            `sections[${sIndex}][questions][${qIndex}][type]`);
+                        $questionCard.find('input.question-marks-input').attr('name',
+                            `sections[${sIndex}][questions][${qIndex}][marks]`);
 
                         $questionCard.find('.option-item').each((oIndex, optionItem) => {
                             const $optionItem = $(optionItem);
@@ -226,8 +293,12 @@
                                 'name': `sections[${sIndex}][questions][${qIndex}][correct_option]`,
                                 'value': oIndex
                             });
-                            $optionItem.find('input[type="text"]').attr('name', `sections[${sIndex}][questions][${qIndex}][options][${oIndex}][text]`);
-                            $optionItem.find('.remove-option-btn').toggle($optionItem.closest('.option-inputs').find('.option-item').length > 1);
+                            $optionItem.find('input[type="text"]').attr('name',
+                                `sections[${sIndex}][questions][${qIndex}][options][${oIndex}][text]`
+                                );
+                            $optionItem.find('.remove-option-btn').toggle($optionItem
+                                .closest('.option-inputs').find('.option-item')
+                                .length > 1);
                         });
                     });
                 });
@@ -266,8 +337,10 @@
                     sectionCard.find('.question-card').each(function() {
                         const questionCard = $(this);
                         const questionTextarea = questionCard.find('textarea.form-control');
-                        const questionTypeSelect = questionCard.find('select.question-type-select');
-                        const questionMarksInput = questionCard.find('input.question-marks-input');
+                        const questionTypeSelect = questionCard.find(
+                            'select.question-type-select');
+                        const questionMarksInput = questionCard.find(
+                            'input.question-marks-input');
 
                         if (!questionTextarea.val().trim()) {
                             questionTextarea.addClass('is-invalid');
@@ -277,7 +350,8 @@
                             questionTypeSelect.addClass('is-invalid');
                             isValid = false;
                         }
-                        if (!questionMarksInput.val() || isNaN(questionMarksInput.val()) || parseInt(questionMarksInput.val()) <= 0) {
+                        if (!questionMarksInput.val() || isNaN(questionMarksInput.val()) ||
+                            parseInt(questionMarksInput.val()) <= 0) {
                             questionMarksInput.addClass('is-invalid');
                             isValid = false;
                         }
@@ -292,7 +366,8 @@
                             }
 
                             optionItems.each(function() {
-                                const optionTextInput = $(this).find('.option-text-input');
+                                const optionTextInput = $(this).find(
+                                    '.option-text-input');
                                 if (!optionTextInput.val().trim()) {
                                     optionTextInput.addClass('is-invalid');
                                     isValid = false;
