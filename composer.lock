@@ -14,7 +14,7 @@
                 "url": "https://github.com/brick/math.git",
                 "reference": "fc7ed316430118cc7836bf45faff18d5dfc8de04"
             },
-            "dist": {
+            "dist": {   
                 "type": "zip",
                 "url": "https://api.github.com/repos/brick/math/zipball/fc7ed316430118cc7836bf45faff18d5dfc8de04",
                 "reference": "fc7ed316430118cc7836bf45faff18d5dfc8de04",
