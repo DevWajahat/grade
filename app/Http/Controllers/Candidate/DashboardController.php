@@ -104,8 +104,7 @@ class DashboardController extends Controller
                 'userAnswers' => function ($query) {
                     $query->with(['question', 'question.options', 'question.correctAnswer']);
                 }
-            ])
-            ->first();
+            ])->first();
 
         $exam = Exam::with('sections.questions.options')->find($id);
 
@@ -113,7 +112,7 @@ class DashboardController extends Controller
             abort(404, 'Exam results not found.');
         }
 
-        return view('screens.candidate.dashboard.examresult', compact('examAttempt', 'exam'));
+        return view('screens.candidate.dashboard.examresult', get_defined_vars());
     }
 
     public function people($code)

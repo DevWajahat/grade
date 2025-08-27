@@ -1,216 +1,55 @@
 @extends('layouts.candidate.app')
-
 @section('content')
-    <!-- ================================= join class modal starts ======================================== -->
+    <!-- Floating Add Button -->
+    <button class="floating-add-btn" id="joinHallBtn" data-bs-toggle="modal" data-bs-target="#joinHallModal">
+        <i class="fas fa-plus"></i>
+    </button>
 
-    <div class="fixed-bottom-right">
-        <button class="btn round-button btn-light" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-            <i class="ri-add-line"></i>
-        </button>
-    </div>
-
-    <div class="modal join-modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <!-- Join Hall Modal -->
+    <div class="modal fade" id="joinHallModal" tabindex="-1" aria-labelledby="joinHallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-
-                <div class="modal-body d-flex justify-content-center align-items-center flex-column join-exam-modal"
-                    style="gap: 50px;">
-                    <h3 class="display-6 ">Join Examintion Hall</h3>
-
-                    <div class="hall-form w-100 ">
-
-                        <p class="fw-bold">Ask your institute for the class code, then enter it here</p>
-
-                        {{-- <form id="joinHall"> --}}
-                        <div class="mt-3">
-                            <label for="form-label ">Hall Code: </label>
-                            <input type="text" class="form-control" name="hall_code" id="hallCode">
-                            <div class="invalid-feedback"></div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="joinHallModalLabel">Join Examination Hall</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-4">Ask your institute for the class code, then enter it here</p>
+                    <form id="joinHallForm">
+                        <div class="mb-3">
+                            <label for="hallCode" class="form-label">Hall Code:</label>
+                            <input type="text" class="form-control" id="hallCode" placeholder="Enter hall code"
+                                required>
                         </div>
-                        <div class="mt-5 d-flex justify-content-end">
-                            <button type="button" class="btn text-secondary" data-bs-dismiss="modal">Back</button>
-                            <button type="submit" id="codeSubmit" class="btn btn-primary">Join Hall</button>
-                        </div>
-                        {{-- </form> --}}
-                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-primary" id="joinHallSubmit">Join Hall</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- ================================= join class modal ends ======================================== -->
-
-
-    <!-- ================================ Examination Hall cards start ================================== -->
-    <div class="container mt-5 mb-5">
-        <div class="row justify-content-center g-4 exam-halls">
-            <!-- Examination Hall Card 1 -->
-
-            @forelse ($examHalls as $hall)
-
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
-                <a href="{{ route('candidate.examination',$hall->hall_code) }}" class="card-link">
-                    <div class="card card-custom w-100">
-                        <div class="card-header-custom" data-gradient-index="0">
-                            <div class="text-small font-semibold-custom mb-1-custom"></div>
-                            <h3 class="text-medium font-bold-custom text-light">{{ $hall->title }}</h3>
-                            <div class="overlay-opacity-10"></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center text-secondary text-small">
-                                <svg class="me-2" style="width: 1rem; height: 1rem; color: #6c757d;" fill="currentColor"
-                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="font-weight-medium text-dark">{{ $hall->user->first_name . ' ' . $hall->user->last_name }}</span>
+    <div class="dashboard-content">
+        <div class="container-fluid">
+            <div class="row">
+                @forelse ($examHalls as $hall)
+                    <a href="{{ route('candidate.examination', $hall->hall_code) }}" style="text-decoration: none">
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="exam-hall-card gradient-blue">
+                                <div class="card-body">
+                                    <h4>{{ $hall->title }}</h4>
+                                    <div class="instructor-info">
+                                        <i class="fas fa-user"></i>
+                                        <span>{{ $hall->user->first_name . ' ' . $hall->user->last_name }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                @empty
+                @endforelse
             </div>
-            @empty
-
-            @endforelse
-            {{-- <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
-                <a href="examination-hall.html" class="card-link">
-                    <div class="card card-custom w-100">
-                        <div class="card-header-custom" data-gradient-index="0">
-                            <div class="text-small font-semibold-custom mb-1-custom">Hall A</div>
-                            <h3 class="text-medium font-bold-custom text-light">Mathematics Exam</h3>
-                            <div class="overlay-opacity-10"></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center text-secondary text-small">
-                                <svg class="me-2" style="width: 1rem; height: 1rem; color: #6c757d;" fill="currentColor"
-                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="font-weight-medium text-dark">Mr. John Doe</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div> --}}
-
-            <!-- Examination Hall Card 2 -->
-            {{-- <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
-                <a href="examination-hall.html" class="card-link">
-                    <div class="card card-custom w-100">
-                        <div class="card-header-custom" data-gradient-index="1">
-                            <div class="text-small font-semibold-custom mb-1-custom">Hall B</div>
-                            <h3 class="text-medium font-bold-custom text-light">Physics Exam</h3>
-                            <div class="overlay-opacity-10"></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center text-secondary text-small">
-                                <svg class="me-2" style="width: 1rem; height: 1rem; color: #6c757d;" fill="currentColor"
-                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="font-weight-medium text-dark">Ms. Jane Smith</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div> --}}
-
-            <!-- Examination Hall Card 3 -->
-            {{-- <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
-                <a href="examination-hall-C.html" class="card-link">
-                    <div class="card card-custom w-100">
-                        <div class="card-header-custom" data-gradient-index="2">
-                            <div class="text-small font-semibold-custom mb-1-custom">Hall C</div>
-                            <h3 class="text-medium font-bold-custom text-light">Chemistry Exam</h3>
-                            <div class="overlay-opacity-10"></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center text-secondary text-small">
-                                <svg class="me-2" style="width: 1rem; height: 1rem; color: #6c757d;" fill="currentColor"
-                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="font-weight-medium text-dark">Dr. Robert Brown</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div> --}}
-
-            <!-- Example: Hall with no current exam -->
-            {{-- <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
-                <a href="examination-hall.html" class="card-link">
-                    <div class="card card-custom w-100">
-                        <div class="card-header-custom" data-gradient-index="6">
-                            <div class="text-small font-semibold-custom mb-1-custom">Hall D</div>
-                            <h3 class="text-medium font-bold-custom text-light">No Current Exam</h3>
-                            <div class="overlay-opacity-10"></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center text-secondary text-small">
-                                <svg class="me-2" style="width: 1rem; height: 1rem; color: #6c757d;"
-                                    fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="font-weight-medium text-dark">Ms. Emily White</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div> --}}
         </div>
     </div>
-
-    <!-- ================================ Examination Hall cards ends ================================== -->
 @endsection
-@push('scripts')
-    <script>
-        $(document).ready(function() {
-            console.log("dfdfs")
-            $('#codeSubmit').on("click", function() {
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ route('candidate.join.hall') }}",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        code: $('#hallCode').val()
-                    },
-                    success: function(response) {
-                        console.log(response)
-
-                        $('.join-modal').removeClass('show');
-                        $('.exam-halls').append(`
-                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
-                <a href="examination-hall-C.html" class="card-link">
-                    <div class="card card-custom w-100">
-                        <div class="card-header-custom" data-gradient-index="2">
-                            <div class="text-small font-semibold-custom mb-1-custom">Hall C</div>
-                            <h3 class="text-medium font-bold-custom text-light">${response.hall_title}</h3>
-                            <div class="overlay-opacity-10"></div>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center text-secondary text-small">
-                                <svg class="me-2" style="width: 1rem; height: 1rem; color: #6c757d;" fill="currentColor"
-                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="font-weight-medium text-dark">${response.hall_examiner_name}</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-                        `)
-                    }
-                })
-            })
-        })
-    </script>
-@endpush

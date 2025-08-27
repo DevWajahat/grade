@@ -1,0 +1,184 @@
+/* Exam Hall Specific Styles */
+:root {
+    --primary-color: #0891b2;
+    --accent-color: #facc15;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+body {
+    background-color: var(--bg-light);
+    font-family: "Source Sans Pro", sans-serif;
+}
+    
+/* Top navigation for desktop screens */
+.top-nav {
+    /* margin-top: 200px !important; */
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0;
+    z-index: 600000000;
+}
+
+.top-nav .nav-tabs {
+    border-bottom: none;
+}
+
+.top-nav .nav-link {
+    color: var(--text-light);
+    border: none;
+    padding: 1rem 2rem;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.top-nav .nav-link:hover {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.top-nav .nav-link.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    background: none;
+}
+
+/* Bottom navigation for mobile screens */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem 0;
+    z-index: 1000;
+}
+
+.bottom-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.bottom-nav .nav-item:hover,
+.bottom-nav .nav-item.active {
+    color: var(--primary-color);
+}
+
+.bottom-nav .nav-item span {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Instruction Card */
+.instruction-card {
+    border: none;
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+}
+
+.instruction-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.instruction-icon {
+    color: var(--primary-color);
+    margin-top: 0.25rem;
+}
+
+/* Exam Card */
+.exam-card {
+    border: none;
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+}
+
+.exam-meta .badge {
+    display: inline-flex;
+    align-items: center;
+}
+
+.exam-sections .badge {
+    font-size: 0.8rem;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 991.98px) {
+    .main-content {
+        padding-bottom: 80px;
+        /* Space for bottom navigation */
+    }
+
+    .container-fluid {
+        padding: 1rem;
+    }
+
+    .instruction-card,
+    .exam-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Desktop specific styles */
+@media (min-width: 992px) {
+    .main-content {
+        padding-top: 0;
+    }
+}
+
+/* Profile Avatar */
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    background: var(--bg-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: var(--text-light);
+}
+
+/* Sidebar Navigation */
+.offcanvas-body .nav-link {
+    color: var(--text-light);
+    text-decoration: none;
+    padding: 0.75rem 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.offcanvas-body .nav-link:hover {
+    background-color: var(--bg-light);
+    color: var(--primary-color);
+}
+
+.offcanvas-body .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+}
