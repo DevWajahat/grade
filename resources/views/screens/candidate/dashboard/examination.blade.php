@@ -1,6 +1,10 @@
 @extends('layouts.candidate.app')
 @section('content')
-
+    <style>
+        .exam-card {
+            font-family: 'Poppins', sans-serif !important;
+        }
+    </style>
     <!-- Sidebar Offcanvas -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar">
         <div class="offcanvas-header">
@@ -127,10 +131,10 @@
                         @forelse ($exams as $exam)
                             <div class="card exam-card">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ $exam->title }}</h5>
+                                    <h5 class="card-title" style="font-family: 'Poppins', sans-serif;">{{ $exam->title }}</h5>
                                     <div class="exam-meta mb-3">
-                                        <span class="badge bg-light text-dark me-2"
-                                            style="background-color: #f8f9fa !important; color: #212529 !important;">
+                                        <span class="badge bg-light text-dark me-2 mt-2"
+                                            style="background-color: #f8f9fa !important; color: #212529 !important; font-family: 'Poppins', sans-serif;">
                                             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"
                                                 class="me-1">
                                                 <path
@@ -138,8 +142,8 @@
                                             </svg>
                                             {{ $exam->duration_minutes }} minutes
                                         </span>
-                                        <span class="badge bg-light text-dark"
-                                            style="background-color: #f8f9fa !important; color: #212529 !important;">
+                                        <span class="badge bg-light text-dark mt-2"
+                                            style="background-color: #f8f9fa !important; color: #212529 !important;font-family: 'Poppins', sans-serif ">
                                             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"
                                                 class="me-1">
                                                 <path
@@ -148,12 +152,12 @@
                                             {{ $exam->questions_count }} questions
                                         </span>
                                     </div>
-                                    <div class="exam-sections mb-3">
-                                        <h6>Exam Sections:</h6>
-                                        <div class="d-flex gap-2 flex-wrap">
+                                    <div class="exam-sections mb-3" style="font-family: 'Poppins', sans-serif;">
+                                        <h6 style="font-family: 'Poppins', sans-serif;">Exam Sections:</h6>
+                                        <div class="d-flex gap-2 flex-wrap" style="font-family: 'Poppins', sans-serif;">
                                             @forelse ($exam->sections as $section)
-                                                <span class="badge bg-primary"
-                                                    style="background-color: #0d6efd !important;">{{ $section->title }}
+                                                <span class="badge bg-primary mt-2 py-2 pe-2"
+                                                    style="background-color: #0d6efd !important; font-family: 'Poppins', sans-serif ">{{ $section->title }}
                                                     (Q{{ count($section->questions) }})
                                                     (Marks:
                                                     {{ $section->total_marks }})</span>

@@ -17,19 +17,19 @@
             <nav class="sidebar-nav">
                 <ul class="list-unstyled">
                     <li class="mb-2">
-                        <a href="#" class="nav-link d-flex align-items-center">
+                        <a href="{{ route('candidate.profile.index') }}" class="nav-link d-flex align-items-center">
                             <i class="fas fa-user me-3"></i>
                             Profile
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" class="nav-link d-flex align-items-center active">
+                        <a href="{{ route('candidate.dashboard') }}" class="nav-link d-flex align-items-center active">
                             <i class="fas fa-home me-3"></i>
                             Dashboard
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" class="nav-link d-flex align-items-center">
+                        <a href="{{ route('logout') }}" class="nav-link d-flex align-items-center">
                             <i class="fas fa-sign-out-alt me-3"></i>
                             Logout
                         </a>

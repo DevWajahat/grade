@@ -229,7 +229,7 @@ if ($userAnswer) {
         $isCorrect = $userAnswerText === $correctAnswerText;
         $questionStatusClass = $isCorrect ? 'correct' : 'incorrect';
         $statusText = $isCorrect
-            ? 'Correct (' . $question->marks . ' Marks)'
+            ? 'Correct (' . $question->marks . '/' . $question->marks . ')'
             : 'Incorrect (0 Marks)';
         $iconClass = $isCorrect ? 'ri-check-line' : 'ri-close-line';
     } else {
@@ -237,7 +237,7 @@ if ($userAnswer) {
         if ($userAnswer->marks !== null) {
             $questionStatusClass = $userAnswer->marks > 0 ? 'correct' : 'incorrect';
             $statusText =
-                'Graded (' . $userAnswer->marks . ' / ' . $question->marks . ' Marks)';
+                ' (' . $userAnswer->marks . ' / ' . $question->marks . ')';
             $iconClass = $userAnswer->marks > 0 ? 'ri-check-line' : 'ri-close-line';
         } else {
             $questionStatusClass = 'graded';

@@ -21,14 +21,14 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top custom-navbar" style="background-color:#fff;">
         <div class="container">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="{{ route('index') }}">
                 <i class="fas fa-graduation-cap me-2"></i>
                 <span class="brand-text">Grade Genius</span>
             </a>
 
             <div class="d-flex gap-2">
-                <a href="index.html" class="btn btn-outline-primary btn-sm">Back to Home</a>
-                <button class="btn btn-primary btn-sm" onclick="showLoginModal()">Login</button>
+                <a href="{{ route('index') }}" class="btn btn-outline-primary btn-sm">Back to Home</a>
+                <a class="btn btn-primary btn-sm" href="{{ route('login') }}" >Login</a>
             </div>
         </div>
     </nav>
@@ -248,8 +248,7 @@
                         </form>
 
                         <div class="login-link text-center">
-                            <p>Already have an account? <a href="#" onclick="showLoginModal()"
-                                    class="text-primary">Login here</a></p>
+                            <p>Already have an account? <a href="{{ route('login') }}" class="text-primary">Login here</a></p>
                         </div>
                     </div>
                 </div>

@@ -56,10 +56,8 @@
                 </ul>
 
                 <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Login</button>
-                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#signupModal">Sign
-                        Up</button>
+                    <a class="btn btn-outline-primary btn-sm" href="{{ route('login') }}">Login</a>
+                    <a class="btn btn-primary btn-sm" href="{{ route('register') }}">Sign Up</a>
                 </div>
             </div>
         </div>

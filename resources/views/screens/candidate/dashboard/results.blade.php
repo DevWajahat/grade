@@ -106,7 +106,7 @@
                         @endphp
                         @if ($exam_attempt)
                             {{-- Display completed exam details --}}
-                            <a href="{{ route('candidate.exam.result', $exam->id) }}">
+                            <a href="{{ route('candidate.exam.result', $exam->id) }}" style="text-decoration: none">
                                 <div class="exam-result-item">
                                     <div class="exam-info">
                                         <div class="exam-icon">
@@ -158,7 +158,7 @@
         <div class="nav-item"
             style="display:flex; flex-direction:column; align-items:center; color:#6c757d; font-size:0.75rem;">
             <a href="{{ route('candidate.examination', $code) }}"
-                style="text-decoration:none; color:inherit; font-family:'Poppins', sans-serif;">
+                style="text-decoration:none; color:inherit; font-family:'Poppins', sans-serif; ">
                 <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"
                     style="fill:#6c757d; margin-bottom:0.25rem;">
                     <path

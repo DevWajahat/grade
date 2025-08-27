@@ -27,8 +27,8 @@
             </a>
 
             <div class="d-flex gap-2">
-                <a href="index.html" class="btn btn-outline-primary btn-sm">Back to Home</a>
-                <a href="signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+                <a href="{{ route('index') }}" class="btn btn-outline-primary btn-sm">Back to Home</a>
+                <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Sign Up</a>
             </div>
         </div>
     </nav>
@@ -90,7 +90,7 @@
                         </form>
 
                         <div class="signup-link text-center mt-4">
-                            <p>Don't have an account? <a href="signup.html" class="text-primary">Sign up here</a></p>
+                            <p>Don't have an account? <a href="{{ route('register') }}" class="text-primary">Sign up here</a></p>
                         </div>
                     </div>
                 </div>
