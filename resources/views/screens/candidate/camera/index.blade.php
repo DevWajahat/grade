@@ -7,6 +7,7 @@
 
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1" />
     <title>Capture Handwritten Answer</title>
+    @laravelPWA
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
@@ -334,312 +335,312 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script>
-    const video = document.getElementById("video");
-    const photoCanvas = document.getElementById("photo-canvas");
-    const takePhotoButton = document.getElementById("takePhotoButton");
-    const switchCameraButton = document.getElementById("switchCameraButton");
-    const flashButton = document.getElementById("flashButton");
-    const toggleFullScreenButton = document.getElementById(
-        "toggleFullScreenButton"
-    );
-    const capturedImagesPreview = document.getElementById(
-        "captured-images-preview"
-    );
-    const clearAllButton = document.getElementById("clearAllButton");
-    const sendToExamButton = document.getElementById("sendToExamButton");
-    const captureOverlay = document.getElementById("capture-overlay");
-    const overlayMessage = document.getElementById("overlay-message");
-    const loadingOverlay = document.getElementById("loading-overlay");
+    <script>
+        const video = document.getElementById("video");
+        const photoCanvas = document.getElementById("photo-canvas");
+        const takePhotoButton = document.getElementById("takePhotoButton");
+        const switchCameraButton = document.getElementById("switchCameraButton");
+        const flashButton = document.getElementById("flashButton");
+        const toggleFullScreenButton = document.getElementById(
+            "toggleFullScreenButton"
+        );
+        const capturedImagesPreview = document.getElementById(
+            "captured-images-preview"
+        );
+        const clearAllButton = document.getElementById("clearAllButton");
+        const sendToExamButton = document.getElementById("sendToExamButton");
+        const captureOverlay = document.getElementById("capture-overlay");
+        const overlayMessage = document.getElementById("overlay-message");
+        const loadingOverlay = document.getElementById("loading-overlay");
 
-    let currentStream = null;
-    let facingMode = "environment";
-    let capturedImages = [];
-    let images = [];
-    let targetTextareaId = null;
-    let track = null;
+        let currentStream = null;
+        let facingMode = "environment";
+        let capturedImages = [];
+        let images = [];
+        let targetTextareaId = null;
+        let track = null;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    targetTextareaId = {{ $index }};
+        const urlParams = new URLSearchParams(window.location.search);
+        targetTextareaId = {{ $index }};
 
-    function showLoading(message = "Processing image...") {
-        loadingOverlay.querySelector("span").textContent = message;
-        loadingOverlay.style.display = "flex";
-    }
-
-    function hideLoading() {
-        loadingOverlay.style.display = "none";
-    }
-
-    async function startCamera(facing) {
-        if (currentStream) {
-            currentStream.getTracks().forEach((track) => track.stop());
+        function showLoading(message = "Processing image...") {
+            loadingOverlay.querySelector("span").textContent = message;
+            loadingOverlay.style.display = "flex";
         }
-        overlayMessage.textContent = "Loading camera...";
-        captureOverlay.style.display = "flex";
-        flashButton.style.display = "none";
 
-        const preferredFacingMode = facing || facingMode;
+        function hideLoading() {
+            loadingOverlay.style.display = "none";
+        }
 
-        const potentialConstraints = [{
-            video: {
-                facingMode: preferredFacingMode
+        async function startCamera(facing) {
+            if (currentStream) {
+                currentStream.getTracks().forEach((track) => track.stop());
             }
-        }, {
-            video: {
-                facingMode: preferredFacingMode === "environment" ? "user" : "environment",
-            },
-        }, {
-            video: true
-        }, ];
+            overlayMessage.textContent = "Loading camera...";
+            captureOverlay.style.display = "flex";
+            flashButton.style.display = "none";
 
-        for (const constraints of potentialConstraints) {
-            try {
-                currentStream = await navigator.mediaDevices.getUserMedia(
-                    constraints
-                );
-                video.srcObject = currentStream;
-                await video.play();
-                captureOverlay.style.display = "none";
-                const videoTrack = currentStream.getVideoTracks()[0];
-                const settings = videoTrack.getSettings();
-                facingMode =
-                    settings.facingMode || constraints.video.facingMode || "user";
+            const preferredFacingMode = facing || facingMode;
 
-                switchCameraButton.setAttribute(
-                    "aria-pressed",
-                    facingMode === "user" ? "true" : "false"
-                );
-                video.style.transform =
-                    facingMode === "user" ? "scaleX(-1)" : "scaleX(1)";
-
-                track = currentStream.getVideoTracks()[0];
-                if (track && "torch" in track.getCapabilities()) {
-                    flashButton.style.display = "flex";
-                } else {
-                    flashButton.style.display = "none";
+            const potentialConstraints = [{
+                video: {
+                    facingMode: preferredFacingMode
                 }
-                return;
-            } catch (err) {
-                console.warn(
-                    `Attempt with constraints ${JSON.stringify(constraints)} failed:`,
-                    err
-                );
+            }, {
+                video: {
+                    facingMode: preferredFacingMode === "environment" ? "user" : "environment",
+                },
+            }, {
+                video: true
+            }, ];
+
+            for (const constraints of potentialConstraints) {
+                try {
+                    currentStream = await navigator.mediaDevices.getUserMedia(
+                        constraints
+                    );
+                    video.srcObject = currentStream;
+                    await video.play();
+                    captureOverlay.style.display = "none";
+                    const videoTrack = currentStream.getVideoTracks()[0];
+                    const settings = videoTrack.getSettings();
+                    facingMode =
+                        settings.facingMode || constraints.video.facingMode || "user";
+
+                    switchCameraButton.setAttribute(
+                        "aria-pressed",
+                        facingMode === "user" ? "true" : "false"
+                    );
+                    video.style.transform =
+                        facingMode === "user" ? "scaleX(-1)" : "scaleX(1)";
+
+                    track = currentStream.getVideoTracks()[0];
+                    if (track && "torch" in track.getCapabilities()) {
+                        flashButton.style.display = "flex";
+                    } else {
+                        flashButton.style.display = "none";
+                    }
+                    return;
+                } catch (err) {
+                    console.warn(
+                        `Attempt with constraints ${JSON.stringify(constraints)} failed:`,
+                        err
+                    );
+                }
             }
-        }
 
-        console.error("Error accessing camera: All attempts failed.");
-        overlayMessage.textContent = "Camera access denied or not available.";
-        swal({
-            title: "Error",
-            text: "Could not access camera. Please ensure camera permissions are granted and a camera is connected.",
-            icon: "error",
-        });
-    }
-
-    startCamera(facingMode);
-
-    switchCameraButton.addEventListener("click", () => {
-        facingMode = facingMode === "environment" ? "user" : "environment";
-        startCamera(facingMode);
-    });
-
-    flashButton.addEventListener("click", async () => {
-        if (track) {
-            const isTorchOn = flashButton.getAttribute("aria-pressed") === "true";
-            try {
-                await track.applyConstraints({
-                    advanced: [{
-                        torch: !isTorchOn
-                    }],
-                });
-                flashButton.setAttribute("aria-pressed", !isTorchOn);
-            } catch (err) {
-                console.error("Error toggling flashlight: ", err);
-                swal({
-                    title: "Error",
-                    text: "Could not toggle flashlight.",
-                    icon: "error",
-                });
-            }
-        }
-    });
-
-    takePhotoButton.addEventListener("click", async () => {
-        if (!currentStream) {
+            console.error("Error accessing camera: All attempts failed.");
+            overlayMessage.textContent = "Camera access denied or not available.";
             swal({
                 title: "Error",
-                text: "Camera not active. Please allow camera access.",
+                text: "Could not access camera. Please ensure camera permissions are granted and a camera is connected.",
                 icon: "error",
             });
-            return;
         }
 
-        photoCanvas.width = video.videoWidth;
-        photoCanvas.height = video.videoHeight;
-        const context = photoCanvas.getContext("2d");
+        startCamera(facingMode);
 
-        if (facingMode === "user") {
-            context.translate(photoCanvas.width, 0);
-            context.scale(-1, 1);
-        }
-        context.drawImage(video, 0, 0, photoCanvas.width, photoCanvas.height);
-        if (facingMode === "user") {
-            context.setTransform(1, 0, 0, 1, 0, 0);
-        }
-
-        const imageDataUrl = photoCanvas.toDataURL("image/png");
-        const base64Data = imageDataUrl.split(",")[1];
-        images.push(imageDataUrl)
-
-        // showLoading("Extracting text...");
-        hideLoading()
-
-        console.log(images)
-        renderCapturedImages();
-
-        const newImage = {
-            base64: imageDataUrl,
-        };
-
-        capturedImages.push(newImage);
-
-        renderCapturedImages();
-        hideLoading();
-    });
-
-    function renderCapturedImages() {
-        const imageContainer = document.createElement('div');
-        imageContainer.id = 'image-thumbnails-container';
-        capturedImagesPreview.querySelectorAll('.thumbnail-container').forEach(el => el.remove());
-
-        capturedImages.forEach((imgData, index) => {
-            const container = document.createElement("div");
-            container.classList.add("thumbnail-container");
-            container.dataset.index = index;
-
-            const img = document.createElement("img");
-            img.src = imgData.base64;
-            img.alt = `Captured Image ${index + 1}`;
-
-            const removeBtn = document.createElement("button");
-            removeBtn.classList.add("remove-btn");
-            removeBtn.innerHTML = '<i class="ri-close-line"></i>';
-            removeBtn.addEventListener("click", () => removeCapturedImage(index));
-
-            container.appendChild(img);
-            container.appendChild(removeBtn);
-            capturedImagesPreview.appendChild(container);
+        switchCameraButton.addEventListener("click", () => {
+            facingMode = facingMode === "environment" ? "user" : "environment";
+            startCamera(facingMode);
         });
-    }
 
-    function removeCapturedImage(indexToRemove) {
-        capturedImages.splice(indexToRemove, 1);
-        images.splice(indexToRemove, 1);
-        renderCapturedImages();
-    }
-
-    clearAllButton.addEventListener("click", () => {
-        swal({
-            title: "Are you sure?",
-            text: "Are you sure you want to clear all captured images and extracted text?",
-            icon: "warning",
-            buttons: ["Cancel", "Yes, clear it!"],
-            dangerMode: true,
-        }).then((willClear) => {
-            if (willClear) {
-                capturedImages = [];
-                images = [];
-                renderCapturedImages();
-                swal("Poof! Your captured images have been cleared!", {
-                    icon: "success",
-                });
+        flashButton.addEventListener("click", async () => {
+            if (track) {
+                const isTorchOn = flashButton.getAttribute("aria-pressed") === "true";
+                try {
+                    await track.applyConstraints({
+                        advanced: [{
+                            torch: !isTorchOn
+                        }],
+                    });
+                    flashButton.setAttribute("aria-pressed", !isTorchOn);
+                } catch (err) {
+                    console.error("Error toggling flashlight: ", err);
+                    swal({
+                        title: "Error",
+                        text: "Could not toggle flashlight.",
+                        icon: "error",
+                    });
+                }
             }
         });
-    });
 
-    sendToExamButton.addEventListener("click", () => {
-        if (capturedImages.length === 0) {
-            swal({
-                title: "No Images",
-                text: "Please capture at least one image before submitting.",
-                icon: "warning",
-            });
-            return;
-        }
-
-        const base64Images = capturedImages.map(img => img.base64);
-
-        showLoading("Sending images to server...");
-
-        $.ajax({
-            type: 'POST',
-            url: "{{ route('candidate.ocr', ['index' => $index, 'id' => $id]) }}",
-            data: {
-                _token: "{{ csrf_token() }}",
-                images: base64Images
-            },
-            success: function(response) {
-                hideLoading();
-                console.log(response);
-                console.log(response.value)
-                var index = JSON.parse(response.value).index
-                var extractedText = JSON.parse(response.value).extracted_text
-
-                swal({
-                    title: "Success",
-                    text: "Images submitted successfully!",
-                    icon: "success",
-                });
-
-                var value = JSON.stringify([index, extractedText])
-
-                sessionStorage.setItem('ocrquestion', value);
-
-                window.location.href = "{{ route('candidate.exam.index', $id) }}";
-
-            },
-            error: function(xhr, status, error) {
-                hideLoading();
-                console.error("Error submitting images:", error);
+        takePhotoButton.addEventListener("click", async () => {
+            if (!currentStream) {
                 swal({
                     title: "Error",
-                    text: "An error occurred while submitting images. Please try again.",
+                    text: "Camera not active. Please allow camera access.",
                     icon: "error",
                 });
+                return;
+            }
+
+            photoCanvas.width = video.videoWidth;
+            photoCanvas.height = video.videoHeight;
+            const context = photoCanvas.getContext("2d");
+
+            if (facingMode === "user") {
+                context.translate(photoCanvas.width, 0);
+                context.scale(-1, 1);
+            }
+            context.drawImage(video, 0, 0, photoCanvas.width, photoCanvas.height);
+            if (facingMode === "user") {
+                context.setTransform(1, 0, 0, 1, 0, 0);
+            }
+
+            const imageDataUrl = photoCanvas.toDataURL("image/png");
+            const base64Data = imageDataUrl.split(",")[1];
+            images.push(imageDataUrl)
+
+            // showLoading("Extracting text...");
+            hideLoading()
+
+            console.log(images)
+            renderCapturedImages();
+
+            const newImage = {
+                base64: imageDataUrl,
+            };
+
+            capturedImages.push(newImage);
+
+            renderCapturedImages();
+            hideLoading();
+        });
+
+        function renderCapturedImages() {
+            const imageContainer = document.createElement('div');
+            imageContainer.id = 'image-thumbnails-container';
+            capturedImagesPreview.querySelectorAll('.thumbnail-container').forEach(el => el.remove());
+
+            capturedImages.forEach((imgData, index) => {
+                const container = document.createElement("div");
+                container.classList.add("thumbnail-container");
+                container.dataset.index = index;
+
+                const img = document.createElement("img");
+                img.src = imgData.base64;
+                img.alt = `Captured Image ${index + 1}`;
+
+                const removeBtn = document.createElement("button");
+                removeBtn.classList.add("remove-btn");
+                removeBtn.innerHTML = '<i class="ri-close-line"></i>';
+                removeBtn.addEventListener("click", () => removeCapturedImage(index));
+
+                container.appendChild(img);
+                container.appendChild(removeBtn);
+                capturedImagesPreview.appendChild(container);
+            });
+        }
+
+        function removeCapturedImage(indexToRemove) {
+            capturedImages.splice(indexToRemove, 1);
+            images.splice(indexToRemove, 1);
+            renderCapturedImages();
+        }
+
+        clearAllButton.addEventListener("click", () => {
+            swal({
+                title: "Are you sure?",
+                text: "Are you sure you want to clear all captured images and extracted text?",
+                icon: "warning",
+                buttons: ["Cancel", "Yes, clear it!"],
+                dangerMode: true,
+            }).then((willClear) => {
+                if (willClear) {
+                    capturedImages = [];
+                    images = [];
+                    renderCapturedImages();
+                    swal("Poof! Your captured images have been cleared!", {
+                        icon: "success",
+                    });
+                }
+            });
+        });
+
+        sendToExamButton.addEventListener("click", () => {
+            if (capturedImages.length === 0) {
+                swal({
+                    title: "No Images",
+                    text: "Please capture at least one image before submitting.",
+                    icon: "warning",
+                });
+                return;
+            }
+
+            const base64Images = capturedImages.map(img => img.base64);
+
+            showLoading("Sending images to server...");
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('candidate.ocr', ['index' => $index, 'id' => $id]) }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    images: base64Images
+                },
+                success: function(response) {
+                    hideLoading();
+                    console.log(response);
+                    console.log(response.value)
+                    var index = JSON.parse(response.value).index
+                    var extractedText = JSON.parse(response.value).extracted_text
+
+                    swal({
+                        title: "Success",
+                        text: "Images submitted successfully!",
+                        icon: "success",
+                    });
+
+                    var value = JSON.stringify([index, extractedText])
+
+                    sessionStorage.setItem('ocrquestion', value);
+
+                    window.location.href = "{{ route('candidate.exam.index', $id) }}";
+
+                },
+                error: function(xhr, status, error) {
+                    hideLoading();
+                    console.error("Error submitting images:", error);
+                    swal({
+                        title: "Error",
+                        text: "An error occurred while submitting images. Please try again.",
+                        icon: "error",
+                    });
+                }
+            });
+        });
+
+        toggleFullScreenButton.addEventListener("click", () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+                toggleFullScreenButton.setAttribute("aria-pressed", "false");
+            } else {
+                document.documentElement.requestFullscreen();
+                toggleFullScreenButton.setAttribute("aria-pressed", "true");
             }
         });
-    });
 
-    toggleFullScreenButton.addEventListener("click", () => {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-            toggleFullScreenButton.setAttribute("aria-pressed", "false");
-        } else {
-            document.documentElement.requestFullscreen();
-            toggleFullScreenButton.setAttribute("aria-pressed", "true");
-        }
-    });
+        navigator.mediaDevices.enumerateDevices().then((devices) => {
+            const videoInputDevices = devices.filter(
+                (device) => device.kind === "videoinput"
+            );
+            if (videoInputDevices.length > 1) {
+                switchCameraButton.style.display = "flex";
+            }
+        });
 
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-        const videoInputDevices = devices.filter(
-            (device) => device.kind === "videoinput"
-        );
-        if (videoInputDevices.length > 1) {
-            switchCameraButton.style.display = "flex";
-        }
-    });
+        video.addEventListener("loadeddata", () => {
+            captureOverlay.style.display = "none";
+        });
 
-    video.addEventListener("loadeddata", () => {
-        captureOverlay.style.display = "none";
-    });
-
-    window.addEventListener("beforeunload", () => {
-        if (currentStream) {
-            currentStream.getTracks().forEach((track) => track.stop());
-        }
-    });
-</script>
+        window.addEventListener("beforeunload", () => {
+            if (currentStream) {
+                currentStream.getTracks().forEach((track) => track.stop());
+            }
+        });
+    </script>
 </body>
 
 </html>
