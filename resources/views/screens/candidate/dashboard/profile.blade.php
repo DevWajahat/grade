@@ -320,3 +320,6 @@
         </div>
     </div>
 @endsection
+@push('scripts')
+    <script src="{{ asset('assets/candidate/js/profile.js') }}"></script>
+@endpush

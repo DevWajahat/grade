@@ -34,8 +34,8 @@
         <div class="container-fluid">
             <div class="row">
                 @forelse ($examHalls as $hall)
-                    <a href="{{ route('candidate.examination', $hall->hall_code) }}" style="text-decoration: none">
-                        <div class="col-lg-4 col-md-6 mb-4">
+                    <a href="{{ route('candidate.examination', $hall->hall_code) }}" class="col-lg-4 col-md-6 mb-4" style="text-decoration: none">
+                        <div class="col-12">
                             <div class="exam-hall-card gradient-blue">
                                 <div class="card-body">
                                     <h4>{{ $hall->title }}</h4>
@@ -53,3 +53,36 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            // console.log("fd")
+            $('#joinHallForm').on('submit', function(e) {
+                e.preventDefault();
+            })
+            $('#joinHallSubmit').on('click', function() {
+
+                $.LoadingOverlay("show");
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('candidate.join.hall') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        code: $('#hallCode').val()
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $.LoadingOverlay("hide");
+
+                        Swal.fire({
+                            title: "Hall Added Successfully.",
+                            icon: "success",
+                        });
+                        window.location.reload();
+                    }
+                })
+            })
+        })
+    </script>
+@endpush
