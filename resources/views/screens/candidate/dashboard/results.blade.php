@@ -106,7 +106,7 @@
                         @endphp
                         @if ($exam_attempt)
                             {{-- Display completed exam details --}}
-                            <a href="{{ route('candidate.exam.result', $exam->id) }}" style="text-decoration: none">
+                            <a href="{{ $exam_attempt->total_marks !== null ? route('candidate.exam.result', $exam->id) : '#' }}" style="text-decoration: none">
                                 <div class="exam-result-item">
                                     <div class="exam-info">
                                         <div class="exam-icon">
@@ -119,8 +119,9 @@
                                         </div>
                                     </div>
                                     <div class="exam-score">
+                                        {{-- @dd($exam_attempt->total_marks) --}}
                                         <span
-                                            class="score">{{ number_format(($exam_attempt->total_score / $exam->total_marks) * 100, 2) }}%</span>
+                                            class="score">{{ $exam->total_marks !== 0 && $exam_attempt->total_score !== null ?  number_format(($exam_attempt->total_score / $exam->total_marks) * 100, 2) : '0'  }}%</span>
                                         <span class="status completed">Completed</span>
                                     </div>
                                 </div>

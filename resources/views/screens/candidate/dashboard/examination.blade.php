@@ -129,7 +129,7 @@
 
                         <!-- Exam Card -->
                         @forelse ($exams as $exam)
-                            <div class="card exam-card">
+                            <div class="card exam-card mt-4">
                                 <div class="card-body">
                                     <h5 class="card-title" style="font-family: 'Poppins', sans-serif;">{{ $exam->title }}</h5>
                                     <div class="exam-meta mb-3">

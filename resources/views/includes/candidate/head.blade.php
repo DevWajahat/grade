@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="{{ asset('assets/candidate/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/candidate/css/exam-hall.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/candidate/css/result.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/candidate/css/profile.css') }}">
+
 </head>
 
 <body>
