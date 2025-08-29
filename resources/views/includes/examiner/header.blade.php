@@ -30,6 +30,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
         integrity="sha512-XcIsjKMcuVe0Ucj/xgIXQnytNwBttJbNjltBV18IOnru2lDPe9KRRyvCXw6Y5H415vbBLRm8+q6fmLUU7DfO6Q=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.5/sweetalert2.min.css"
+        integrity="sha512-Nedhxx3wE5Vtf1ZVxN7QSpNPigYCwZDf8jiwzcV0PxCxm5uEpEtqxGQrz5IR5KkaypLyu3GU1qOgWMH9wI3uXQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Template Stylesheet -->
     <link href="{{ asset('assets/examiner/css/style.css') }}" rel="stylesheet">
 </head>
@@ -70,19 +73,29 @@
                             class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
 
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle {{ Route::currentRouteName() == 'examiner.exams.create' || Route::currentRouteName() == 'examiner.exams.index' ? 'active' : '' }}" data-bs-toggle="dropdown" ><i
-                                class="fa fa-laptop me-2"></i>Exams</a>
+                        <a href="#"
+                            class="nav-link dropdown-toggle {{ Route::currentRouteName() == 'examiner.exams.create' || Route::currentRouteName() == 'examiner.exams.index' ? 'active' : '' }}"
+                            data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Exams</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="{{ route('examiner.exams.create') }}" class="dropdown-item {{ Route::currentRouteName() == 'examiner.exams.create' ? 'active' : '' }}">Create Exams</a>
-                            <a href="{{ route('examiner.exams.index') }}" class="dropdown-item {{ Route::currentRouteName() == 'examiner.exams.index' ? 'active' : '' }}">Exam List</a>
+                            <a href="{{ route('examiner.exams.create') }}"
+                                class="dropdown-item {{ Route::currentRouteName() == 'examiner.exams.create' ? 'active' : '' }}">Create
+                                Exams</a>
+                            <a href="{{ route('examiner.exams.index') }}"
+                                class="dropdown-item {{ Route::currentRouteName() == 'examiner.exams.index' ? 'active' : '' }}">Exam
+                                List</a>
                         </div>
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle {{ Route::currentRouteName() == 'examiner.hall.create' || Route::currentRouteName() == 'examiner.hall.index' ? 'active' : '' }}" data-bs-toggle="dropdown"><i
-                                class="fa fa-laptop me-2 "></i>Exam Halls</a>
+                        <a href="#"
+                            class="nav-link dropdown-toggle {{ Route::currentRouteName() == 'examiner.hall.create' || Route::currentRouteName() == 'examiner.hall.index' ? 'active' : '' }}"
+                            data-bs-toggle="dropdown"><i class="fa fa-laptop me-2 "></i>Exam Halls</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="{{ route('examiner.hall.create') }} " class="dropdown-item {{ Route::currentRouteName() == 'examiner.hall.create' ? 'active' : '' }}">Create Halls</a>
-                            <a href="{{ route('examiner.hall.index') }}" class="dropdown-item {{ Route::currentRouteName() == 'examiner.hall.index' ? 'active' : '' }}">All Exam Halls Lists</a>
+                            <a href="{{ route('examiner.hall.create') }} "
+                                class="dropdown-item {{ Route::currentRouteName() == 'examiner.hall.create' ? 'active' : '' }}">Create
+                                Halls</a>
+                            <a href="{{ route('examiner.hall.index') }}"
+                                class="dropdown-item {{ Route::currentRouteName() == 'examiner.hall.index' ? 'active' : '' }}">All
+                                Exam Halls Lists</a>
                         </div>
                     </div>
 

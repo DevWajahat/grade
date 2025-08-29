@@ -12,6 +12,7 @@
 
 <!-- JavaScript Libraries --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.22.5/sweetalert2.min.js" integrity="sha512-lEAhnSkDaa0XS4yP6nlJmfBbbe2p83qBt4KlVMXy7CGe2pAtNijskiu9lLs9jB+RpGoy97P62/HngyeGPIbK2w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 <script src="{{ asset('assets/examiner/lib/chart/chart.min.js') }}"></script>
 <script src="{{ asset('assets/examiner/lib/easing/easing.min.js') }}"></script>

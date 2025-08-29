@@ -26,4 +26,6 @@ Route::prefix('exams')->controller(ExamController::class)->name('exams.')->group
     Route::post('update-exam-status', 'updateExamStatus')->name('status.update');
     Route::get('exam-result/{id}', 'result')->name('result');
     Route::get('candidate-result-detail/{id}','candidateResult')->name('candidate.result');
+    Route::post('update-exam-attempt-grades/{id}',  'updateExamAttemptGrades')->name('update-grades');
+    Route::post('/examiner/grade-ai/{id}',  'gradeWithAi')->name('grade-ai');
 });
