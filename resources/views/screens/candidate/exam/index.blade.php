@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>Lindy - Bootstrap 5 UI Kit</title>
-        @laravelPWA
+    @laravelPWA
 
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -65,7 +65,8 @@
                             @endphp
                             @forelse ($question->options as $option)
                                 <div class="form-check">
-                                    <input class="form-check-input" data-question="{{ $question->id }}" type="radio" name="q{{ $i }}"
+                                    <input class="form-check-input" data-question="{{ $question->id }}" type="radio"
+                                        name="q{{ $i }}"
                                         id="q{{ $i }}_option{{ $j }}"
                                         value="{{ $option->option_text }}" />
                                     <label class="form-check-label"
@@ -80,7 +81,7 @@
                             @endforelse
                         @endif
 
-                        @if ($question->type == 'short-answer' || $question->type == 'long-answer' )
+                        @if ($question->type == 'short-answer' || $question->type == 'long-answer')
                             <div class="mb-3">
                                 <textarea class="form-control" name="q{{ $i }}" data-question="{{ $question->id }}"
                                     id="q{{ $i }}_answer" rows="3" placeholder="Type your answer here..."></textarea>
@@ -157,7 +158,8 @@
         display: none;
         justify-content: center;
         align-items: center;
-        z-index: 1051; /* Higher than the modal (1050) */
+        z-index: 1051;
+        /* Higher than the modal (1050) */
     }
 
     /* Make the spinner larger */
@@ -169,11 +171,18 @@
 </style>
 
 <script src="{{ asset('assets/candidate/js/autosave.js') }}"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
     integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js">
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     window.onload = () => {
         const sections = $('.question-section-card');
@@ -181,7 +190,6 @@
         const nextSectionBtn = $('#nextSectionBtn');
         const submitExamBtn = $('#submitExamBtn');
         const timerDisplay = $('#examTimer');
-        const loaderOverlay = $('#loader-overlay');
         let timeRemaining;
         let currentSectionIndex;
         const savedState = JSON.parse(sessionStorage.getItem("examState"));
@@ -237,9 +245,10 @@
             });
             clearInterval(timerInterval);
             window.onbeforeunload = null;
-            loaderOverlay.show();
+
+            $.LoadingOverlay("show");
             $.ajax({
-                url: `{{ route('candidate.submitexam',$id) }}`,
+                url: `{{ route('candidate.submitexam', $id) }}`,
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
@@ -247,7 +256,7 @@
                     answers: formData
                 },
                 success: function(response) {
-                    loaderOverlay.hide();
+                    $.LoadingOverlay("hide");
                     if (response.success) {
                         sessionStorage.removeItem("examState");
                         sessionStorage.removeItem("ocrquestion");
@@ -270,8 +279,10 @@
                     }
                 },
                 error: function(xhr) {
-                    loaderOverlay.hide();
-                    const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'An unexpected error occurred.';
+                    $.LoadingOverlay("hide");
+
+                    const errorMsg = xhr.responseJSON ? xhr.responseJSON.message :
+                        'An unexpected error occurred.';
                     Swal.fire({
                         title: 'Error!',
                         text: 'Error submitting exam: ' + errorMsg,
