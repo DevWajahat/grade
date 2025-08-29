@@ -56,33 +56,48 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
-            // console.log("fd")
-            $('#joinHallForm').on('submit', function(e) {
-                e.preventDefault();
-            })
-            $('#joinHallSubmit').on('click', function() {
+      $(document).ready(function() {
+    $('#joinHallForm').on('submit', function(e) {
+        e.preventDefault();
+    })
+    $('#joinHallSubmit').on('click', function() {
+        $.LoadingOverlay("show");
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('candidate.join.hall') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                code: $('#hallCode').val()
+            },
+            success: function(response) {
+                console.log(response);
+                $.LoadingOverlay("hide");
 
-                $.LoadingOverlay("show");
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ route('candidate.join.hall') }}",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        code: $('#hallCode').val()
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        $.LoadingOverlay("hide");
-
-                        Swal.fire({
-                            title: "Hall Added Successfully.",
-                            icon: "success",
-                        });
-                        window.location.reload();
-                    }
-                })
-            })
-        })
+                if (response.status === false) {
+                    Swal.fire({
+                        title: "Error!",
+                        text: response.message,
+                        icon: "error",
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Hall Added Successfully.",
+                        icon: "success",
+                    });
+                    window.location.reload();
+                }
+            },
+            error: function(xhr) {
+                $.LoadingOverlay("hide");
+                Swal.fire({
+                    title: "Error!",
+                    text: "An unexpected error occurred.",
+                    icon: "error",
+                });
+                console.log(xhr.responseText);
+            }
+        });
+    });
+});
     </script>
 @endpush

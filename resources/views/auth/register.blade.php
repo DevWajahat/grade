@@ -344,6 +344,7 @@
         validateField(field) {
             let isValid = true
             let errorMessage = ""
+            const value = field.value.trim()
 
             // Special handling for the checkbox
             if (field.type === "checkbox") {
@@ -351,49 +352,48 @@
                     isValid = false
                     errorMessage = "You must agree to the terms and conditions"
                 }
-            } else {
-                const value = field.value.trim()
-                if (field.hasAttribute("required") && !value) {
-                    isValid = false
-                    errorMessage = "This field is required"
-                }
+            } else if (field.hasAttribute("required") && !value) {
+                // Check if the field is required and empty
+                isValid = false
+                errorMessage = "This field is required"
+            }
 
-                // Specific field validations
-                switch (field.type) {
+            // Specific field validations
+            if (isValid) {
+                switch (field.id) {
+                    case "firstName":
+                    case "lastName":
+                    case "guardianName":
+                        if (!this.isValidName(value)) {
+                            isValid = false;
+                            errorMessage = "Name must contain only letters and can't start with a number or special character.";
+                        }
+                        break;
+                    case "phone":
+                    case "guardianPhone":
+                        if (value && !this.isValidPhone(value)) {
+                            isValid = false;
+                            errorMessage = "Please enter a valid Pakistani phone number (e.g., 03xx-xxxxxxx).";
+                        }
+                        break;
                     case "email":
                         if (value && !this.isValidEmail(value)) {
-                            isValid = false
-                            errorMessage = "Please enter a valid email address"
+                            isValid = false;
+                            errorMessage = "Please enter a valid email address.";
                         }
-                        break
-
-                    case "tel":
-                        if (value && !this.isValidPhone(value)) {
-                            isValid = false
-                            errorMessage = "Please enter a valid phone number"
-                        }
-                        break
-
+                        break;
                     case "password":
-                        if (field.id === "password" && value && value.length < 8) {
-                            isValid = false
-                            errorMessage = "Password must be at least 8 characters long"
+                        if (value && value.length < 8) {
+                            isValid = false;
+                            errorMessage = "Password must be at least 8 characters long.";
                         }
-                        if (field.id === "confirmPassword") {
-                            const password = document.getElementById("password").value
-                            if (value && value !== password) {
-                                isValid = false
-                                errorMessage = "Passwords do not match"
-                            }
+                        break;
+                    case "confirmPassword":
+                        if (value && value !== document.getElementById("password").value) {
+                            isValid = false;
+                            errorMessage = "Passwords do not match.";
                         }
-                        break
-
-                    case "text":
-                        if ((field.id === "firstName" || field.id === "lastName") && value && value.length < 2) {
-                            isValid = false
-                            errorMessage = "Name must be at least 2 characters long"
-                        }
-                        break
+                        break;
                 }
             }
 
@@ -423,8 +423,16 @@
         }
 
         isValidPhone(phone) {
-            const phoneRegex = /^[+]?[1-9][\d]{0,15}$/
-            return phoneRegex.test(phone.replace(/[\s\-$$$$]/g, ""))
+            // Updated regex for common Pakistani phone formats: 03xx-xxxxxxx or +923xx-xxxxxxx
+            const phoneRegex = /^((\+92)|(0092))?-?3\d{2}-?\d{7}$/;
+            const normalizedPhone = phone.replace(/[\s\-\(\)]/g, ""); // Remove spaces, hyphens, and parentheses
+            return phoneRegex.test(normalizedPhone);
+        }
+
+        isValidName(name) {
+            // Regex for names: must start with a letter and can include letters, spaces, hyphens, and apostrophes
+            const nameRegex = /^[A-Za-z][A-Za-z\s'-]{1,}$/
+            return nameRegex.test(name)
         }
 
         checkPasswordStrength(event) {
@@ -471,13 +479,16 @@
         validatePasswordMatch() {
             const password = document.getElementById("password").value
             const confirmPassword = document.getElementById("confirmPassword").value
-
+            const confirmPasswordField = document.getElementById("confirmPassword")
+            const feedback = confirmPasswordField.nextElementSibling
             if (confirmPassword && password !== confirmPassword) {
-                document.getElementById("confirmPassword").classList.add("is-invalid")
-                document.getElementById("confirmPassword").classList.remove("is-valid")
+                confirmPasswordField.classList.add("is-invalid")
+                confirmPasswordField.classList.remove("is-valid")
+                feedback.textContent = "Passwords do not match"
             } else if (confirmPassword) {
-                document.getElementById("confirmPassword").classList.remove("is-invalid")
-                document.getElementById("confirmPassword").classList.add("is-valid")
+                confirmPasswordField.classList.remove("is-invalid")
+                confirmPasswordField.classList.add("is-valid")
+                feedback.textContent = ""
             }
         }
 
