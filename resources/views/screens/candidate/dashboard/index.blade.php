@@ -33,8 +33,10 @@
     <div class="dashboard-content">
         <div class="container-fluid">
             <div class="row">
+                {{-- @dd($examHalls) --}}
                 @forelse ($examHalls as $hall)
-                    <a href="{{ route('candidate.examination', $hall->hall_code) }}" class="col-lg-4 col-md-6 mb-4" style="text-decoration: none">
+                    <a href="{{ route('candidate.examination', $hall->hall_code) }}" class="col-lg-4 col-md-6 mb-4"
+                        style="text-decoration: none">
                         <div class="col-12">
                             <div class="exam-hall-card gradient-blue">
                                 <div class="card-body">
@@ -48,56 +50,89 @@
                         </div>
                     </a>
                 @empty
+
+                    <!-- Ensure you have Bootstrap 5 and jQuery UI loaded in your project -->
+                    <div class="container d-flex justify-content-center align-items-center" style="">
+                        <div id="noHallsCard" class="card shadow-lg border-0" style="animation: fadeInDown 0.8s;">
+                            <div class="card-body text-center">
+                                <i class="bi bi-building-exclamation" style="font-size: 3rem; color: #0d6efd;"></i>
+                                <h3 class="mt-3 mb-2 text-primary fw-bold">No Examination Halls Found</h3>
+                                <p class="text-muted mb-0">Please add examination halls to continue.</p>
+                            </div>
+                        </div>
+                    </div>
                 @endforelse
             </div>
         </div>
     </div>
+
+    <!-- Extra CSS for fadeInDown animation -->
+    <style>
+        @keyframes fadeInDown {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        </style>
 @endsection
 
 @push('scripts')
-    <script>
-      $(document).ready(function() {
-    $('#joinHallForm').on('submit', function(e) {
-        e.preventDefault();
-    })
-    $('#joinHallSubmit').on('click', function() {
-        $.LoadingOverlay("show");
-        $.ajax({
-            type: 'POST',
-            url: "{{ route('candidate.join.hall') }}",
-            data: {
-                _token: "{{ csrf_token() }}",
-                code: $('#hallCode').val()
-            },
-            success: function(response) {
-                console.log(response);
-                $.LoadingOverlay("hide");
 
-                if (response.status === false) {
-                    Swal.fire({
-                        title: "Error!",
-                        text: response.message,
-                        icon: "error",
-                    });
-                } else {
-                    Swal.fire({
-                        title: "Hall Added Successfully.",
-                        icon: "success",
-                    });
-                    window.location.reload();
-                }
-            },
-            error: function(xhr) {
-                $.LoadingOverlay("hide");
-                Swal.fire({
-                    title: "Error!",
-                    text: "An unexpected error occurred.",
-                    icon: "error",
-                });
-                console.log(xhr.responseText);
-            }
-        });
+<script>
+    $(document).ready(function(){
+        // Animate card with jQuery UI
+        $("#noHallsCard").fadeIn(700);
     });
-});
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#joinHallForm').on('submit', function(e) {
+                e.preventDefault();
+            })
+            $('#joinHallSubmit').on('click', function() {
+                $.LoadingOverlay("show");
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('candidate.join.hall') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        code: $('#hallCode').val()
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $.LoadingOverlay("hide");
+
+                        if (response.status === false) {
+                            Swal.fire({
+                                title: "Error!",
+                                text: response.message,
+                                icon: "error",
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Hall Added Successfully.",
+                                icon: "success",
+                            });
+                            window.location.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        $.LoadingOverlay("hide");
+                        Swal.fire({
+                            title: "Error!",
+                            text: "An unexpected error occurred.",
+                            icon: "error",
+                        });
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        });
     </script>
 @endpush

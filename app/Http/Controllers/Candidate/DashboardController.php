@@ -15,6 +15,8 @@ class DashboardController extends Controller
     {
         $examHalls = auth()->user()->examination_halls()->get();
 
+        // dd(auth()->user());
+
         return view("screens.candidate.dashboard.index", get_defined_vars());
     }
 

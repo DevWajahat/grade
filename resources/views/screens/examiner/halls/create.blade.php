@@ -13,7 +13,7 @@
                         <label for="" class="form-label">Title:</label>
                         <input type="text" name="title" class="form-control" placeholder="Enter Hall Name" id="">
                         @error('title')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mt-5">

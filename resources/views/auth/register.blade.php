@@ -373,7 +373,7 @@
                     case "guardianPhone":
                         if (value && !this.isValidPhone(value)) {
                             isValid = false;
-                            errorMessage = "Please enter a valid Pakistani phone number (e.g., 03xx-xxxxxxx).";
+                            errorMessage = "Please enter a valid Pakistani phone number (e.g., +923xxxxxxx).";
                         }
                         break;
                     case "email":
