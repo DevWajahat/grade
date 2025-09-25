@@ -59,11 +59,13 @@
         .is-invalid~.invalid-feedback {
             display: block !important;
         }
-        .form-control{
-            color:#000 !important;
+
+        .form-control {
+            color: #000 !important;
         }
-        .form-select{
-            color:#000
+
+        .form-select {
+            color: #000
         }
     </style>
 
@@ -77,7 +79,7 @@
                         <label for="examHall" class="form-label">Examination Hall</label>
                         <select class="form-select" id="examHall" name="exam_hall" aria-label="Examination Hall">
                             @forelse ($halls as $hall)
-                                <option  value="{{ $hall->id }}">{{ $hall->title }}</option>
+                                <option value="{{ $hall->id }}">{{ $hall->title }}</option>
                             @empty
                             @endforelse
                         </select>
@@ -473,7 +475,14 @@
             examinationForm.addEventListener('submit', function(event) {
                 if (!validateForm()) {
                     event.preventDefault();
-                    alert('Please correct the errors in the form before submitting.');
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Please correct the errors in the form before submitting.",
+
+                    });
+                    // alert('Please correct the errors in the form before submitting.');
                 }
             });
 

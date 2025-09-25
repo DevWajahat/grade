@@ -82,7 +82,7 @@ class ExamController extends Controller
         }
 
 
-        return redirect()->route('examiner.exams.index')->with('message', 'exam added successfully.');
+        return redirect()->route('examiner.exams.index')->with('message', 'exam added to examHall successfully.');
     }
 
     public function edit($id)
@@ -161,7 +161,7 @@ class ExamController extends Controller
             }
         }
 
-        return redirect()->route('examiner.exams.index');
+        return redirect()->route('examiner.exams.index')->with('message','Exam updated Successfully.');
     }
 
     public function result($id)

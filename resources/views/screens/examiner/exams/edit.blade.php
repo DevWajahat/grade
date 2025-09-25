@@ -1,7 +1,6 @@
 @extends('layouts.examiner.app')
 @section('content')
     <style>
-        /* Your CSS remains the same */
         :root {
             --primary: #009CFF;
             --secondary: #6610f2;
@@ -66,7 +65,7 @@
         }
 
         .form-select {
-            color: #000
+            color: #000;
         }
     </style>
 
@@ -81,9 +80,9 @@
                     <div class="col-md-4">
                         <label for="examHall" class="form-label">Examination Hall</label>
                         <select class="form-select" id="examHall" name="exam_hall" aria-label="Examination Hall">
-                            <option value="">Select a Hall</option>
+                            <option value="" disabled selected>Select a Hall</option>
                             @forelse ($halls as $hall)
-                                <option value="{{ $hall->id }}" {{ $hall->id == $exam->hall_id ? 'selected' : '' }}>
+                                <option value="{{ $hall->id }}" {{ $hall->id == $exam->exam_hall_id ? 'selected' : '' }}>
                                     {{ $hall->title }}</option>
                             @empty
                             @endforelse
@@ -97,15 +96,15 @@
                         <div class="invalid-feedback">Please enter an exam title.</div>
                     </div>
                     <div class="col-md-4">
-                        <label for="examTitle" class="form-label">Exam Total Marks</label>
-                        <input type="number" class="form-control" id="examTotalMarks" name="exam_total_marks"
-                            placeholder="e.g., 100">
-                        <div class="invalid-feedback">Give Total Marks</div>
+                        <label for="examTotalMarks" class="form-label">Exam Total Marks</label>
+                        <input type="number" class="form-control" value="{{ $exam->total_marks }}"
+                            id="examTotalMarks" name="exam_total_marks" placeholder="e.g., 100">
+                        <div class="invalid-feedback">Please enter total marks.</div>
                     </div>
                     <div class="col-md-4">
                         <label for="examDuration" class="form-label">Duration (minutes)</label>
-                        <input type="number" class="form-control" value="{{ $exam->duration_minutes }}" id="examDuration"
-                            name="exam_duration" placeholder="e.g., 90">
+                        <input type="number" class="form-control" value="{{ $exam->duration_minutes }}"
+                            id="examDuration" name="exam_duration" placeholder="e.g., 90">
                         <div class="invalid-feedback">Please enter a valid duration.</div>
                     </div>
                 </div>
@@ -115,8 +114,8 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-4">
-                    <button type="button" class="btn btn-success add-section-btn"><i class="ri-add-line me-1"></i>Add
-                        Section</button>
+                    <button type="button" class="btn btn-success add-section-btn"><i
+                            class="ri-add-line me-1"></i>Add Section</button>
                     <button type="submit" class="btn btn-primary"><i class="ri-save-line me-1"></i>Update
                         Examination</button>
                 </div>
@@ -127,13 +126,13 @@
 
 @push('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
     <script>
         $(document).ready(function() {
-
             const examinationForm = $('#examinationForm');
             const sectionsContainer = $('#sectionsContainer');
-            const addSectionBtn = examinationForm.find('.add-section-btn');
 
+            // Create option input HTML
             const createOptionInput = (sIndex, qIndex, oIndex, option = {}) => {
                 const isCorrect = option.is_correct ? 'checked' : '';
                 return `
@@ -148,6 +147,7 @@
                 `;
             };
 
+            // Create question card HTML
             const createQuestionCardHtml = (sIndex, qIndex, question = {}) => {
                 const questionTypeHtml = `
                     <option value="">Select Type</option>
@@ -183,11 +183,13 @@
                                 </div>
                             </div>
                             <div class="options-container mt-3"></div>
+                            <div class="invalid-feedback invalid-feedback-options"></div>
                         </div>
                     </div>
                 `;
             };
 
+            // Create section card HTML
             const createSectionCardHtml = (sIndex, section = {}) => {
                 const sectionTitleHtml = section.title ?
                     `<input type="hidden" name="sections[${sIndex}][title]" value="${section.title}">` : '';
@@ -208,6 +210,7 @@
                 `;
             };
 
+            // Add option to a question
             const addOption = (questionCard, option = {}) => {
                 const sIndex = questionCard.closest('.section-card').index();
                 const qIndex = questionCard.index();
@@ -229,7 +232,7 @@
                 reIndexForm();
             };
 
-
+            // Add question to a section
             const addQuestion = (sectionCard, question = {}) => {
                 const sIndex = sectionCard.index();
                 const questionsContainer = sectionCard.find('.questions-container');
@@ -249,6 +252,7 @@
                 reIndexForm();
             };
 
+            // Add a new section
             const addSection = (section = {}) => {
                 const sIndex = sectionsContainer.find('.section-card').length;
                 const newSectionCard = $(createSectionCardHtml(sIndex, section));
@@ -261,32 +265,32 @@
                 reIndexForm();
             };
 
+            // Populate main exam details
             const populateMainExamDetails = (examData) => {
-                $('#examHall').val(examData.exam_hall_id);
+                $('#examHall option').each(function() {
+                    $(this).prop('selected', $(this).val() == examData.exam_hall_id);
+                });
                 $('#examTitle').val(examData.title);
+                $('#examTotalMarks').val(examData.total_marks);
                 $('#examDuration').val(examData.duration_minutes);
             };
 
+            // Re-index the form elements
             const reIndexForm = () => {
                 examinationForm.find('.section-card').each((sIndex, sectionCard) => {
                     const $sectionCard = $(sectionCard);
                     $sectionCard.find('.card-header h6').text(`Section ${sIndex + 1}`);
-                    $sectionCard.find('.remove-section-btn').toggle(sectionsContainer.find(
-                        '.section-card').length > 1);
+                    $sectionCard.find('input[name^="sections["][name$="[title]"]').attr('name', `sections[${sIndex}][title]`);
+                    $sectionCard.find('.remove-section-btn').toggle(sectionsContainer.find('.section-card').length > 1);
 
                     $sectionCard.find('.question-card').each((qIndex, questionCard) => {
                         const $questionCard = $(questionCard);
-                        $questionCard.find('.card-body .d-flex h6').text(
-                            `Question ${qIndex + 1}`);
-                        $questionCard.find('.remove-question-btn').toggle($questionCard.closest(
-                            '.questions-container').find('.question-card').length > 1);
+                        $questionCard.find('.card-body .d-flex h6').text(`Question ${qIndex + 1}`);
+                        $questionCard.find('.remove-question-btn').toggle($questionCard.closest('.questions-container').find('.question-card').length > 1);
 
-                        $questionCard.find('textarea.form-control').attr('name',
-                            `sections[${sIndex}][questions][${qIndex}][text]`);
-                        $questionCard.find('select.question-type-select').attr('name',
-                            `sections[${sIndex}][questions][${qIndex}][type]`);
-                        $questionCard.find('input.question-marks-input').attr('name',
-                            `sections[${sIndex}][questions][${qIndex}][marks]`);
+                        $questionCard.find('textarea.form-control').attr('name', `sections[${sIndex}][questions][${qIndex}][text]`);
+                        $questionCard.find('select.question-type-select').attr('name', `sections[${sIndex}][questions][${qIndex}][type]`);
+                        $questionCard.find('input.question-marks-input').attr('name', `sections[${sIndex}][questions][${qIndex}][marks]`);
 
                         $questionCard.find('.option-item').each((oIndex, optionItem) => {
                             const $optionItem = $(optionItem);
@@ -294,28 +298,78 @@
                                 'name': `sections[${sIndex}][questions][${qIndex}][correct_option]`,
                                 'value': oIndex
                             });
-                            $optionItem.find('input[type="text"]').attr('name',
-                                `sections[${sIndex}][questions][${qIndex}][options][${oIndex}][text]`
-                                );
-                            $optionItem.find('.remove-option-btn').toggle($optionItem
-                                .closest('.option-inputs').find('.option-item')
-                                .length > 1);
+                            $optionItem.find('input[type="text"]').attr('name', `sections[${sIndex}][questions][${qIndex}][options][${oIndex}][text]`);
+                            $optionItem.find('.remove-option-btn').toggle($optionItem.closest('.option-inputs').find('.option-item').length > 1);
                         });
                     });
                 });
             };
 
-            // ----------------------------------------------------------------------
-            // Validation Logic
-            // ----------------------------------------------------------------------
+            // Event Listeners
+            $(document).on('click', '.add-section-btn', function() {
+                addSection();
+            });
 
+            $(document).on('click', '.add-question-btn', function() {
+                const sectionCard = $(this).closest('.section-card');
+                addQuestion(sectionCard);
+            });
+
+            $(document).on('click', '.add-option-btn', function() {
+                const questionCard = $(this).closest('.question-card');
+                addOption(questionCard);
+            });
+
+            $(document).on('click', '.remove-option-btn', function() {
+                const optionItem = $(this).closest('.option-item');
+                const optionInputsContainer = optionItem.closest('.option-inputs');
+                if (optionInputsContainer.find('.option-item').length > 1) {
+                    optionItem.remove();
+                    reIndexForm();
+                }
+            });
+
+            $(document).on('click', '.remove-question-btn', function() {
+                const questionCard = $(this).closest('.question-card');
+                const questionsContainer = questionCard.closest('.questions-container');
+                if (questionsContainer.find('.question-card').length > 1) {
+                    questionCard.remove();
+                    reIndexForm();
+                }
+            });
+
+            $(document).on('click', '.remove-section-btn', function() {
+                const sectionCard = $(this).closest('.section-card');
+                if (sectionsContainer.find('.section-card').length > 1) {
+                    sectionCard.remove();
+                    reIndexForm();
+                }
+            });
+
+            $(document).on('change', '.question-type-select', function() {
+                const questionCard = $(this).closest('.question-card');
+                const optionsContainer = questionCard.find('.options-container');
+                const invalidFeedbackOptions = questionCard.find('.invalid-feedback-options');
+                if ($(this).val() === 'multiple-choice') {
+                    if (optionsContainer.is(':empty')) {
+                        addOption(questionCard);
+                    }
+                } else {
+                    optionsContainer.empty();
+                    invalidFeedbackOptions.empty();
+                }
+            });
+
+            // Validation Logic
             const validateForm = () => {
                 let isValid = true;
                 $('.is-invalid').removeClass('is-invalid');
+                $('.invalid-feedback-options').text('').hide();
 
                 // Validate main exam details
                 const examHall = $('#examHall');
                 const examTitle = $('#examTitle');
+                const examTotalMarks = $('#examTotalMarks');
                 const examDuration = $('#examDuration');
 
                 if (!examHall.val()) {
@@ -324,6 +378,10 @@
                 }
                 if (!examTitle.val().trim()) {
                     examTitle.addClass('is-invalid');
+                    isValid = false;
+                }
+                if (!examTotalMarks.val() || isNaN(examTotalMarks.val()) || parseInt(examTotalMarks.val()) <= 0) {
+                    examTotalMarks.addClass('is-invalid');
                     isValid = false;
                 }
                 if (!examDuration.val() || isNaN(examDuration.val()) || parseInt(examDuration.val()) <= 0) {
@@ -338,10 +396,10 @@
                     sectionCard.find('.question-card').each(function() {
                         const questionCard = $(this);
                         const questionTextarea = questionCard.find('textarea.form-control');
-                        const questionTypeSelect = questionCard.find(
-                            'select.question-type-select');
-                        const questionMarksInput = questionCard.find(
-                            'input.question-marks-input');
+                        const questionTypeSelect = questionCard.find('select.question-type-select');
+                        const questionMarksInput = questionCard.find('input.question-marks-input');
+                        const optionsContainer = questionCard.find('.options-container');
+                        const invalidFeedbackOptions = questionCard.find('.invalid-feedback-options');
 
                         if (!questionTextarea.val().trim()) {
                             questionTextarea.addClass('is-invalid');
@@ -351,8 +409,7 @@
                             questionTypeSelect.addClass('is-invalid');
                             isValid = false;
                         }
-                        if (!questionMarksInput.val() || isNaN(questionMarksInput.val()) ||
-                            parseInt(questionMarksInput.val()) <= 0) {
+                        if (!questionMarksInput.val() || isNaN(questionMarksInput.val()) || parseInt(questionMarksInput.val()) <= 0) {
                             questionMarksInput.addClass('is-invalid');
                             isValid = false;
                         }
@@ -360,15 +417,20 @@
                         // Validate options for multiple-choice questions
                         if (questionTypeSelect.val() === 'multiple-choice') {
                             const optionItems = questionCard.find('.option-item');
+                            const correctSelected = questionCard.find('input[type="radio"]:checked').length > 0;
 
-                            if (optionItems.length < 2) {
-                                // You can add a custom alert or feedback for this if needed
+                            if (optionItems.length < 1) {
+                                invalidFeedbackOptions.text('At least one option is required.').show();
                                 isValid = false;
                             }
 
+                            // if (!correctSelected) {
+                            //     invalidFeedbackOptions.append('<br>Please select a correct option.').show();
+                            //     isValid = false;
+                            // }
+
                             optionItems.each(function() {
-                                const optionTextInput = $(this).find(
-                                    '.option-text-input');
+                                const optionTextInput = $(this).find('.option-text-input');
                                 if (!optionTextInput.val().trim()) {
                                     optionTextInput.addClass('is-invalid');
                                     isValid = false;
@@ -381,23 +443,27 @@
                 return isValid;
             };
 
-            // Attach the validation function to the form's submit event
+            // Attach validation to form submit
             examinationForm.on('submit', function(event) {
                 if (!validateForm()) {
-                    event.preventDefault(); // Stop the form from submitting
-                    alert('Please fix the errors in the form.');
-                    // Optionally scroll to the first invalid field
-                    $('html, body').animate({
-                        scrollTop: $('.is-invalid:first').offset().top - 100
-                    }, 500);
+                    event.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: 'Please fix the errors in the form.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        $('html, body').animate({
+                            scrollTop: $('.is-invalid:first').offset().top - 100
+                        }, 500);
+                    });
                 }
             });
 
-            // ----------------------------------------------------------------------
             // Initial Form Population with AJAX
-            // ----------------------------------------------------------------------
             const examId = examinationForm.data('exam-id');
             if (examId) {
+                $.LoadingOverlay("show");
                 $.ajax({
                     url: `/examiner/exams/${examId}/data`,
                     method: 'GET',
@@ -408,17 +474,23 @@
                         } else {
                             addSection();
                         }
+                        $.LoadingOverlay("hide");
                     },
                     error: function(error) {
                         console.error('Failed to load exam data:', error);
-                        alert('Failed to load examination data.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to load examination data.',
+                            confirmButtonText: 'OK'
+                        });
                         addSection();
+                        $.LoadingOverlay("hide");
                     }
                 });
             } else {
                 addSection();
             }
-
         });
     </script>
 @endpush
