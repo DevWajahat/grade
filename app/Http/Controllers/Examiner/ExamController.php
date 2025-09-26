@@ -172,14 +172,13 @@ class ExamController extends Controller
     }
     public function candidateResult($id)
     {
-
-        $examAttempt = UserExamAttempt::find($id)->with([
+        $examAttempt = UserExamAttempt::with([
             'userAnswers' => function ($query) {
                 $query->with(['question', 'question.options', 'question.correctAnswer']);
             }
-        ])
-            ->first();;
-        $exam = Exam::with('sections.questions.options')->find($examAttempt->exam->id);
+        ])->findOrFail($id);  // Use findOrFail for better error handling; removes need for ->first()
+
+        $exam = Exam::with('sections.questions.options')->findOrFail($examAttempt->exam_id);
 
         if (!$examAttempt || !$exam) {
             abort(404, 'Exam results not found.');
@@ -187,7 +186,6 @@ class ExamController extends Controller
 
         return view('screens.examiner.exams.candidate-result', get_defined_vars());
     }
-
     public function updateExamAttemptGrades(Request $request, $id)
     {
         $examAttemptId = $id;

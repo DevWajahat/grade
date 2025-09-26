@@ -1,7 +1,6 @@
 @extends('layouts.examiner.app')
 @section('content')
     <style>
-        /* Your existing CSS styles remain unchanged */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5 !important;
@@ -203,7 +202,7 @@
             </a>
             <div>
                 <button id="checkManualBtn" class="btn btn-success me-2">Check Manually</button>
-                <button id="checkWithAiBtn" class="btn btn-primary d-none">Check with AI</button>
+                <button id="checkWithAiBtn" class="btn btn-primary">Check with AI</button>
             </div>
         </div>
         <div class="exam-header">
@@ -212,7 +211,7 @@
         <div class="score-card">
             <div class="score-item">
                 <h4>TOTAL SCORE</h4>
-                <h3 id="totalScore">{{ $examAttempt->total_marks ?? 'N/A' }} / {{ $exam->total_marks ?? 'N/A' }}</h3>
+                <h3 id="totalScore">{{ $examAttempt->total_marks ?? '0' }} / {{ $exam->total_marks ?? 'N/A' }}</h3>
             </div>
             <div class="score-item">
                 <h4>PERCENTAGE</h4>
@@ -243,12 +242,12 @@
                                     $questionStatusClass = $isCorrect ? 'correct' : 'incorrect';
                                     $statusText = $isCorrect
                                         ? 'Correct (' . $question->marks . '/' . $question->marks . ')'
-                                        : 'Incorrect (0 Marks)';
+                                        : 'Incorrect (0/' . $question->marks . ')';
                                     $iconClass = $isCorrect ? 'ri-check-line' : 'ri-close-line';
                                 } else {
                                     if ($userAnswer->marks !== null) {
                                         $questionStatusClass = $userAnswer->marks > 0 ? 'correct' : 'incorrect';
-                                        $statusText = ' (' . $userAnswer->marks . ' / ' . $question->marks . ')';
+                                        $statusText = ' (' . $userAnswer->marks . '/' . $question->marks . ')';
                                         $iconClass = $userAnswer->marks > 0 ? 'ri-check-line' : 'ri-close-line';
                                     } else {
                                         $questionStatusClass = 'graded';
@@ -258,7 +257,7 @@
                                 }
                             } else {
                                 $questionStatusClass = 'incorrect';
-                                $statusText = 'Not Answered';
+                                $statusText = 'Not Answered (0/' . $question->marks . ')';
                                 $iconClass = 'ri-close-line';
                             }
                         @endphp
@@ -283,22 +282,25 @@
                                     @if ($question->type === 'multiple-choice')
                                         <div class="mcq-manual-grading-area">
                                             <p><strong>Your Answer:</strong></p>
-                                            <ul class="options-list mcq-display-mode">
-                                                @foreach ($question->options as $option)
-                                                    <li
-                                                        class="option-item
-                                    @if ($option->option_text === $correctAnswerText) is-correct @endif
-                                    @if ($option->option_text === $userAnswerText && $option->option_text !== $correctAnswerText) is-incorrect @endif">
-                                                        {{ $option->option_text }}
-                                                        @if ($option->option_text === $correctAnswerText)
-                                                            <span class="ms-auto">✅ Correct Answer</span>
-                                                        @endif
-                                                        @if ($option->option_text === $userAnswerText && $option->option_text !== $correctAnswerText)
-                                                            <span class="ms-auto">❌ Your Selection</span>
-                                                        @endif
-                                                    </li>
-                                                @endforeach
-                                            </ul>
+                                            <div class="answer-box">{{ $userAnswerText }}</div>
+                                            <div class="mcq-display-mode">
+                                                <p><strong>Options:</strong></p>
+                                                <ul class="options-list">
+                                                    @foreach ($question->options as $option)
+                                                        <li class="option-item
+                                                            @if ($option->option_text === $correctAnswerText) is-correct @endif
+                                                            @if ($option->option_text === $userAnswerText && $option->option_text !== $correctAnswerText) is-incorrect @endif">
+                                                            {{ $option->option_text }}
+                                                            @if ($option->option_text === $correctAnswerText)
+                                                                <span class="ms-auto">✅ Correct Answer</span>
+                                                            @endif
+                                                            @if ($option->option_text === $userAnswerText && $option->option_text !== $correctAnswerText)
+                                                                <span class="ms-auto">❌ Your Selection</span>
+                                                            @endif
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
                                             <div class="mcq-edit-mode d-none">
                                                 <p><strong>Select Correct Answer:</strong></p>
                                                 <ul class="options-list">
@@ -309,8 +311,7 @@
                                                                 id="option-{{ $option->id }}"
                                                                 value="{{ $option->option_text }}"
                                                                 @if ($option->option_text === $correctAnswerText) checked @endif>
-                                                            <label class="form-check-label"
-                                                                for="option-{{ $option->id }}">
+                                                            <label class="form-check-label" for="option-{{ $option->id }}">
                                                                 {{ $option->option_text }}
                                                             </label>
                                                         </li>
@@ -318,60 +319,40 @@
                                                 </ul>
                                                 <p class="mt-3"><strong>Feedback:</strong></p>
                                                 <textarea class="form-control" rows="2" id="mcq-feedback-text-{{ $question->id }}">{{ $userAnswer->feedback ?? '' }}</textarea>
-                                                <div class="d-grid mt-3">
-                                                    <button class="btn btn-primary mcq-check-btn" type="button"
-                                                        data-question-id="{{ $question->id }}">Update Score</button>
-                                                </div>
                                             </div>
                                         </div>
                                     @else
                                         <div class="manual-grading-area">
                                             <p><strong>Your Answer:</strong></p>
-                                            <div class="answer-box">
-                                                {{ $userAnswerText }}
-                                            </div>
-                                            @if ($correctAnswerText !== 'Not available')
-                                                <a class="correct-answer-feedback-toggle collapsed"
-                                                    data-bs-toggle="collapse" href="#feedback-{{ $question->id }}"
-                                                    aria-expanded="false" aria-controls="feedback-{{ $question->id }}">
-                                                    <i class="ri-arrow-right-s-fill me-1"></i> View Correct Answer &
-                                                    Feedback
-                                                </a>
-                                                <div class="collapse mt-3" id="feedback-{{ $question->id }}">
-                                                    <div class="feedback-box">
-                                                        <p><strong>Correct Answer:</strong></p>
-                                                        <div class="correct-answer-display">
-                                                            <p class="mb-2">{{ $correctAnswerText }}</p>
-                                                        </div>
-                                                        <div class="correct-answer-edit d-none">
-                                                            <div class="input-group">
-                                                                <textarea class="form-control" rows="2" id="correctAnswer-{{ $question->id }}">{{ $correctAnswerText }}</textarea>
-                                                            </div>
-                                                        </div>
-                                                        <p class="mb-0"><strong>Feedback:</strong></p>
-                                                        <div class="feedback-display">
-                                                            <p class="mb-0">
-                                                                {{ $userAnswer->feedback ?? 'No feedback available.' }}
-                                                            </p>
-                                                        </div>
-                                                        <div class="feedback-edit d-none">
-                                                            <textarea class="form-control" rows="2" id="feedback-text-{{ $question->id }}">{{ $userAnswer->feedback ?? '' }}</textarea>
-                                                        </div>
-                                                        <p class="mb-0 mt-3"><strong>Marks:</strong></p>
-                                                        <div class="marks-display">
-                                                            <p class="mb-0">
-                                                                {{ $userAnswer->marks ?? 0 }} / {{ $question->marks }}
-                                                            </p>
-                                                        </div>
-                                                        <div class="marks-edit d-none">
-                                                            <input type="number" class="form-control w-25"
-                                                                id="marks-{{ $question->id }}"
-                                                                value="{{ $userAnswer->marks ?? 0 }}" min="0"
-                                                                max="{{ $question->marks }}">
-                                                        </div>
+                                            <div class="answer-box">{{ $userAnswerText }}</div>
+                                            <div class="correct-answer-feedback-toggle collapse show" id="feedback-{{ $question->id }}">
+                                                <div class="feedback-box">
+                                                    <p><strong>Correct Answer:</strong></p>
+                                                    <div class="correct-answer-display">
+                                                        <p class="mb-2">{{ $correctAnswerText }}</p>
+                                                    </div>
+                                                    <div class="correct-answer-edit d-none">
+                                                        <textarea class="form-control" rows="2" id="correctAnswer-{{ $question->id }}">{{ $correctAnswerText }}</textarea>
+                                                    </div>
+                                                    <p class="mb-0"><strong>Feedback:</strong></p>
+                                                    <div class="feedback-display">
+                                                        <p class="mb-0">{{ $userAnswer->feedback ?? 'No feedback available.' }}</p>
+                                                    </div>
+                                                    <div class="feedback-edit d-none">
+                                                        <textarea class="form-control" rows="2" id="feedback-text-{{ $question->id }}">{{ $userAnswer->feedback ?? '' }}</textarea>
+                                                    </div>
+                                                    <p class="mb-0 mt-3"><strong>Marks:</strong></p>
+                                                    <div class="marks-display">
+                                                        <p class="mb-0">{{ $userAnswer->marks ?? 0 }} / {{ $question->marks }}</p>
+                                                    </div>
+                                                    <div class="marks-edit d-none">
+                                                        <input type="number" class="form-control w-25"
+                                                            id="marks-{{ $question->id }}"
+                                                            value="{{ $userAnswer->marks ?? 0 }}"
+                                                            min="0" max="{{ $question->marks }}">
                                                     </div>
                                                 </div>
-                                            @endif
+                                            </div>
                                         </div>
                                     @endif
                                 </div>
@@ -399,7 +380,7 @@
                     this.textContent = 'Save Manual Grades';
                     this.classList.remove('btn-success');
                     this.classList.add('btn-warning');
-                    checkWithAiBtn.classList.remove('d-none'); // Show AI button
+                    checkWithAiBtn.classList.remove('d-none');
                     toggleManualInputs(true);
                 } else {
                     saveManualGrades();
@@ -413,10 +394,8 @@
             function toggleManualInputs(enable) {
                 const gradingAreas = document.querySelectorAll('.manual-grading-area');
                 gradingAreas.forEach(area => {
-                    const displays = area.querySelectorAll(
-                        '.correct-answer-display, .feedback-display, .marks-display');
-                    const edits = area.querySelectorAll(
-                    '.correct-answer-edit, .feedback-edit, .marks-edit');
+                    const displays = area.querySelectorAll('.correct-answer-display, .feedback-display, .marks-display');
+                    const edits = area.querySelectorAll('.correct-answer-edit, .feedback-edit, .marks-edit');
                     displays.forEach(el => el.classList.toggle('d-none', enable));
                     edits.forEach(el => el.classList.toggle('d-none', !enable));
                 });
@@ -437,18 +416,24 @@
                     grades: []
                 };
                 const accordionItems = document.querySelectorAll('.accordion-item');
+                let totalMarks = 0;
+
                 accordionItems.forEach(item => {
                     const questionId = item.getAttribute('data-question-id');
                     const questionData = {
                         question_id: questionId
                     };
                     const isMcq = item.querySelector('.mcq-manual-grading-area') !== null;
+                    const questionMaxMarksElement = item.querySelector('.question-status .status-text');
+                    const questionMaxMarks = questionMaxMarksElement.textContent.match(/\/(\d+)/)?.[1] || 0;
+
                     if (isMcq) {
                         const feedbackInput = item.querySelector(`#mcq-feedback-text-${questionId}`);
-                        const selectedOption = item.querySelector(
-                            `input[name="correct-answer-${questionId}"]:checked`);
+                        const selectedOption = item.querySelector(`input[name="correct-answer-${questionId}"]:checked`);
+                        const userAnswerText = item.querySelector('.answer-box')?.textContent?.trim() || 'Not answered';
                         if (selectedOption) {
                             questionData.correct_answer_content = selectedOption.value;
+                            questionData.marks = (userAnswerText === selectedOption.value) ? parseInt(questionMaxMarks) : 0;
                         }
                         if (feedbackInput) {
                             questionData.feedback = feedbackInput.value;
@@ -458,7 +443,8 @@
                         const feedbackInput = item.querySelector(`#feedback-text-${questionId}`);
                         const correctAnswerInput = item.querySelector(`#correctAnswer-${questionId}`);
                         if (marksInput) {
-                            questionData.marks = marksInput.value;
+                            const marks = parseInt(marksInput.value);
+                            questionData.marks = isNaN(marks) ? 0 : Math.max(0, Math.min(marks, parseInt(questionMaxMarks)));
                         }
                         if (feedbackInput) {
                             questionData.feedback = feedbackInput.value;
@@ -467,172 +453,243 @@
                             questionData.correct_answer_content = correctAnswerInput.value;
                         }
                     }
+                    totalMarks += questionData.marks || 0;
                     updatedData.grades.push(questionData);
                 });
 
                 fetch('{{ route('examiner.exams.update-grades', $examAttempt->id) }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify(updatedData)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.reload();
-                        } else {
-                            loadingOverlay.classList.add('d-none');
-                            alert('Error saving grades. Please try again.');
-                        }
-                    })
-                    .catch(error => {
-                        loadingOverlay.classList.add('d-none');
-                        alert('An error occurred. Please try again.');
-                        console.error('Error:', error);
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('totalScore').textContent = `${totalMarks} / {{ $exam->total_marks ?? 'N/A' }}`;
+                        document.getElementById('percentageScore').textContent = {{ $exam->total_marks }} > 0 ? `${((totalMarks / {{ $exam->total_marks }}) * 100).toFixed(2)}%` : '0%';
+                        manualMode = false;
+                        checkManualBtn.textContent = 'Check Manually';
+                        checkManualBtn.classList.remove('btn-warning');
+                        checkManualBtn.classList.add('btn-success');
+                        checkWithAiBtn.classList.add('d-none');
+                        toggleManualInputs(false);
+                        updateDisplayAfterSave(updatedData.grades);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Grades saved successfully.',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error saving grades. Please try again.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                    loadingOverlay.classList.add('d-none');
+                })
+                .catch(error => {
+                    loadingOverlay.classList.add('d-none');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred. Please try again.',
+                        confirmButtonText: 'OK'
                     });
+                    console.error('Error:', error);
+                });
+            }
+
+            function updateDisplayAfterSave(grades) {
+                grades.forEach(grade => {
+                    const questionItem = document.querySelector(`.accordion-item[data-question-id="${grade.question_id}"]`);
+                    if (questionItem) {
+                        const isMcq = questionItem.querySelector('.mcq-manual-grading-area') !== null;
+                        const statusElement = questionItem.querySelector('.question-status');
+                        const statusTextElement = statusElement.querySelector('.status-text');
+                        const iconElement = statusElement.querySelector('i');
+                        const questionMaxMarks = statusTextElement.textContent.match(/\/(\d+)/)?.[1] || 0;
+
+                        if (isMcq) {
+                            const userAnswerText = questionItem.querySelector('.answer-box')?.textContent?.trim() || 'Not answered';
+                            const correctAnswerText = grade.correct_answer_content || 'Not available';
+                            const isCorrect = userAnswerText === correctAnswerText;
+                            statusElement.classList.remove('correct', 'incorrect', 'graded');
+                            statusTextElement.textContent = isCorrect
+                                ? `Correct (${questionMaxMarks}/${questionMaxMarks})`
+                                : `Incorrect (0/${questionMaxMarks})`;
+                            iconElement.className = isCorrect ? 'ri-check-line' : 'ri-close-line';
+                            statusElement.classList.add(isCorrect ? 'correct' : 'incorrect');
+                            const optionsList = questionItem.querySelector('.mcq-display-mode .options-list');
+                            optionsList.innerHTML = '';
+                            @foreach ($question->options as $option)
+                                optionsList.innerHTML += `
+                                    <li class="option-item
+                                        @if ($option->option_text === '${grade.correct_answer_content}') is-correct @endif
+                                        @if ($option->option_text === '${userAnswerText}' && $option->option_text !== '${grade.correct_answer_content}') is-incorrect @endif">
+                                        {{ $option->option_text }}
+                                        @if ($option->option_text === '${grade.correct_answer_content}')
+                                            <span class="ms-auto">✅ Correct Answer</span>
+                                        @endif
+                                        @if ($option->option_text === '${userAnswerText}' && $option->option_text !== '${grade.correct_answer_content}')
+                                            <span class="ms-auto">❌ Your Selection</span>
+                                        @endif
+                                    </li>`;
+                            @endforeach
+                            const feedbackDisplay = questionItem.querySelector('.feedback-display');
+                            if (feedbackDisplay) {
+                                feedbackDisplay.innerHTML = `<p class="mb-0">${grade.feedback || 'No feedback available.'}</p>`;
+                            }
+                        } else {
+                            statusElement.classList.remove('correct', 'incorrect', 'graded');
+                            statusTextElement.textContent = ` (${grade.marks || 0}/${questionMaxMarks})`;
+                            iconElement.className = (grade.marks || 0) > 0 ? 'ri-check-line' : 'ri-close-line';
+                            statusElement.classList.add((grade.marks || 0) > 0 ? 'correct' : 'incorrect');
+                            const correctAnswerDisplay = questionItem.querySelector('.correct-answer-display');
+                            const feedbackDisplay = questionItem.querySelector('.feedback-display');
+                            const marksDisplay = questionItem.querySelector('.marks-display');
+                            if (correctAnswerDisplay) {
+                                correctAnswerDisplay.innerHTML = `<p class="mb-2">${grade.correct_answer_content || 'Not available'}</p>`;
+                            }
+                            if (feedbackDisplay) {
+                                feedbackDisplay.innerHTML = `<p class="mb-0">${grade.feedback || 'No feedback available.'}</p>`;
+                            }
+                            if (marksDisplay) {
+                                marksDisplay.innerHTML = `<p class="mb-0">${grade.marks || 0} / ${questionMaxMarks}</p>`;
+                            }
+                        }
+                    }
+                });
             }
 
             function gradeWithAi() {
                 loadingOverlay.classList.remove('d-none');
                 fetch('{{ route('examiner.exams.grade-ai', $examAttempt->id) }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            exam_attempt_id: '{{ $examAttempt->id }}'
-                        })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        exam_attempt_id: '{{ $examAttempt->id }}'
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.ai_grades && data.ai_grades.candidates && data.ai_grades
-                            .candidates[0] && data.ai_grades.candidates[0].content && data.ai_grades.candidates[
-                                0].content.parts && data.ai_grades.candidates[0].content.parts[0]) {
-                            try {
-                                // Correctly access the nested text field from the API response
-                                const responseText = data.ai_grades.candidates[0].content.parts[0].text;
-
-                                // Directly parse the JSON string into an array
-                                const aiGrades = JSON.parse(responseText);
-
-                                updateFormValues(aiGrades);
-
-                                manualMode = true;
-                                checkManualBtn.textContent = 'Save Manual Grades';
-                                checkManualBtn.classList.remove('btn-success');
-                                checkManualBtn.classList.add('btn-warning');
-                                checkWithAiBtn.classList.add('d-none');
-                                toggleManualInputs(true);
-                                loadingOverlay.classList.add('d-none');
-                            } catch (error) {
-                                loadingOverlay.classList.add('d-none');
-                                alert(
-                                    'An error occurred while parsing the AI grades. Please check the API response format.');
-                                console.error('Parsing Error:', error);
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.ai_grades) {
+                        let aiGrades;
+                        try {
+                            // Handle different possible response structures
+                            if (typeof data.ai_grades === 'string') {
+                                aiGrades = JSON.parse(data.ai_grades);
+                            } else if (data.ai_grades.candidates && data.ai_grades.candidates[0]?.content?.parts?.[0]?.text) {
+                                aiGrades = JSON.parse(data.ai_grades.candidates[0].content.parts[0].text);
+                            } else {
+                                aiGrades = data.ai_grades;
                             }
-                        } else {
-                            loadingOverlay.classList.add('d-none');
-                            alert('AI grading failed. The response was not in the expected format.');
-                            console.error('Unexpected API response:', data);
+
+                            updateFormValues(aiGrades);
+                            manualMode = true;
+                            checkManualBtn.textContent = 'Save Manual Grades';
+                            checkManualBtn.classList.remove('btn-success');
+                            checkManualBtn.classList.add('btn-warning');
+                            checkWithAiBtn.classList.add('d-none');
+                            toggleManualInputs(true);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'AI grading completed. Review and save the grades.',
+                                confirmButtonText: 'OK'
+                            });
+                        } catch (error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to parse AI grades. Please check the API response.',
+                                confirmButtonText: 'OK'
+                            });
+                            console.error('Parsing Error:', error);
                         }
-                    })
-                    .catch(error => {
-                        loadingOverlay.classList.add('d-none');
-                        alert(
-                            'An error occurred during AI grading. Please check your network connection and server logs.');
-                        console.error('Network or Server Error:', error);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'AI grading failed. Please try again.',
+                            confirmButtonText: 'OK'
+                        });
+                        console.error('Unexpected API response:', data);
+                    }
+                    loadingOverlay.classList.add('d-none');
+                })
+                .catch(error => {
+                    loadingOverlay.classList.add('d-none');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred during AI grading. Please check your network connection.',
+                        confirmButtonText: 'OK'
                     });
+                    console.error('Network or Server Error:', error);
+                });
             }
 
             function updateFormValues(aiGrades) {
+                let totalMarks = 0;
                 aiGrades.forEach(grade => {
-                    const questionItem = document.querySelector(
-                        `.accordion-item[data-question-id="${grade.question_id}"]`);
+                    const questionItem = document.querySelector(`.accordion-item[data-question-id="${grade.question_id}"]`);
                     if (questionItem) {
-                        // Get new values from the Gemini response
-                        const obtainedMarks = grade.obtained_marks;
-                        const totalMarks = grade.total_marks;
-                        const feedbackText = grade.feedback;
-                        const correctAnswerContent = grade.correct_answer_content;
-
+                        const isMcq = questionItem.querySelector('.mcq-manual-grading-area') !== null;
                         const marksInput = questionItem.querySelector(`#marks-${grade.question_id}`);
-                        const feedbackInput = questionItem.querySelector(
-                            `#feedback-text-${grade.question_id}`);
-                        const correctAnswerInput = questionItem.querySelector(
-                            `#correctAnswer-${grade.question_id}`);
+                        const feedbackInput = questionItem.querySelector(`#feedback-text-${grade.question_id}`) || questionItem.querySelector(`#mcq-feedback-text-${grade.question_id}`);
+                        const correctAnswerInput = questionItem.querySelector(`#correctAnswer-${grade.question_id}`);
                         const statusElement = questionItem.querySelector('.question-status');
                         const statusTextElement = statusElement.querySelector('.status-text');
                         const iconElement = statusElement.querySelector('i');
+                        const questionMaxMarks = statusTextElement.textContent.match(/\/(\d+)/)?.[1] || grade.total_marks || 0;
 
-                        // Update input fields
-                        if (marksInput && obtainedMarks !== undefined) {
-                            marksInput.value = obtainedMarks;
-                        }
-                        if (feedbackInput && feedbackText !== undefined) {
-                            feedbackInput.value = feedbackText;
-                        }
-                        if (correctAnswerInput && correctAnswerContent !== undefined) {
-                            correctAnswerInput.value = correctAnswerContent;
-                        }
-
-                        // Update display status and marks
-                        if (statusElement && statusTextElement && iconElement) {
+                        if (isMcq) {
+                            const radioInputs = questionItem.querySelectorAll(`input[name="correct-answer-${grade.question_id}"]`);
+                            radioInputs.forEach(radio => {
+                                radio.checked = radio.value === grade.correct_answer_content;
+                            });
+                            const userAnswerText = questionItem.querySelector('.answer-box')?.textContent?.trim() || 'Not answered';
+                            const isCorrect = userAnswerText === grade.correct_answer_content;
                             statusElement.classList.remove('correct', 'incorrect', 'graded');
-                            if (obtainedMarks > 0) {
-                                statusElement.classList.add('correct');
-                                statusTextElement.textContent =
-                                `Correct (${obtainedMarks} / ${totalMarks})`;
-                                iconElement.className = 'ri-check-line';
-                            } else {
-                                statusElement.classList.add('incorrect');
-                                statusTextElement.textContent = `Incorrect (0 / ${totalMarks})`;
-                                iconElement.className = 'ri-close-line';
+                            statusTextElement.textContent = isCorrect
+                                ? `Correct (${questionMaxMarks}/${questionMaxMarks})`
+                                : `Incorrect (0/${questionMaxMarks})`;
+                            iconElement.className = isCorrect ? 'ri-check-line' : 'ri-close-line';
+                            statusElement.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        } else {
+                            if (marksInput) {
+                                const marks = Math.max(0, Math.min(grade.obtained_marks || 0, parseInt(questionMaxMarks)));
+                                marksInput.value = marks;
+                                totalMarks += marks;
                             }
+                            statusElement.classList.remove('correct', 'incorrect', 'graded');
+                            statusTextElement.textContent = ` (${grade.obtained_marks || 0}/${questionMaxMarks})`;
+                            iconElement.className = (grade.obtained_marks || 0) > 0 ? 'ri-check-line' : 'ri-close-line';
+                            statusElement.classList.add((grade.obtained_marks || 0) > 0 ? 'correct' : 'incorrect');
+                        }
+
+                        if (feedbackInput && grade.feedback) {
+                            feedbackInput.value = grade.feedback;
+                        }
+                        if (correctAnswerInput && grade.correct_answer_content) {
+                            correctAnswerInput.value = grade.correct_answer_content;
                         }
                     }
                 });
+                document.getElementById('totalScore').textContent = `${totalMarks} / {{ $exam->total_marks ?? 'N/A' }}`;
+                document.getElementById('percentageScore').textContent = {{ $exam->total_marks }} > 0 ? `${((totalMarks / {{ $exam->total_marks }}) * 100).toFixed(2)}%` : '0%';
             }
 
-            document.querySelectorAll('.mcq-check-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const questionId = this.getAttribute('data-question-id');
-                    const questionItem = document.querySelector(
-                        `.accordion-item[data-question-id="${questionId}"]`);
-                    const selectedOption = questionItem.querySelector(
-                        `input[name="correct-answer-${questionId}"]:checked`);
-                    const feedbackText = questionItem.querySelector(
-                        `#mcq-feedback-text-${questionId}`).value;
-                    const questionMaxMarksElement = questionItem.querySelector(
-                        '.question-status .status-text');
-                    const questionMaxMarks = parseInt(questionMaxMarksElement.textContent.match(
-                        /\d+/)[0]);
-                    if (selectedOption) {
-                        const newCorrectAnswer = selectedOption.value;
-                        const userAnswerText = questionItem.querySelector('.answer-box')
-                            ?.textContent?.trim() || 'Not answered';
-                        const isCorrect = (userAnswerText === newCorrectAnswer);
-                        const statusElement = questionItem.querySelector('.question-status');
-                        const statusTextElement = statusElement.querySelector('.status-text');
-                        const iconElement = statusElement.querySelector('i');
-                        const newMarks = isCorrect ? questionMaxMarks : 0;
-                        if (isCorrect) {
-                            statusElement.classList.remove('incorrect', 'graded');
-                            statusElement.classList.add('correct');
-                            statusTextElement.textContent =
-                                `Correct (${newMarks} / ${questionMaxMarks})`;
-                            iconElement.className = 'ri-check-line';
-                        } else {
-                            statusElement.classList.remove('correct', 'graded');
-                            statusElement.classList.add('incorrect');
-                            statusTextElement.textContent = `Incorrect (0 Marks)`;
-                            iconElement.className = 'ri-close-line';
-                        }
-                    }
-                });
-            });
+            // Remove the mcq-check-btn event listener as it's redundant with saveManualGrades
         });
     </script>
 @endsection
