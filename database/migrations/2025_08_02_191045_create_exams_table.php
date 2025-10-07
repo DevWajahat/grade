@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('exam_hall_id')->constrained('exam_halls');
             $table->foreignId('user_id')->constrained('users');
             $table->string('title');
-            $table->float('total_marks');
+            $table->float('total_marks')->nullable();
             $table->integer('duration_minutes');
+            $table->string('status')->default('private');
             $table->timestamps();
         });
     }

@@ -1,0 +1,39 @@
+services:
+  php-apache:
+    container_name: "${CONTAINER_NAME_PREFIX}-apache-php"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ${PATH_TO_LARAVEL_PROJECT}:/var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    command: >
+      bash -c "chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache &&
+               chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache &&
+               apache2-foreground"
+
+  db:
+    container_name: "${CONTAINER_NAME_PREFIX}-mysql"
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  adminer:
+    container_name: "${CONTAINER_NAME_PREFIX}-adminer"
+    image: adminer
+    ports:
+      - "8080:8080"
+
+volumes:
+  db:
